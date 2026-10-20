@@ -136,7 +136,7 @@
       <text class="lbl-s" x="${X0}" y="452">${axis}</text></svg>`;
   };
 
-  /* Sources -> one hub -> outputs. Paths in the PoC are solid ink, later paths dashed grey. The hub is a heavy ink
+  /* Sources -> one hub -> outputs. Paths in the first phase are solid ink, later paths dashed grey. The hub is a heavy ink
      line with its steps ticked under it; `via` names the entry step */
   CB.flow = ({ sources, outputs, centre, via, steps, aria }) => {
     const W = 1664, H = 600, SX = 360, CX0 = 680, CX1 = 1000, OX = 1340, HY = 300;
