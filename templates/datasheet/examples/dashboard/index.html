@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en" class="sheet">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project A schedule - datasheet example</title>
+<link rel="stylesheet" href="../../kit/tokens.css">
+<link rel="stylesheet" href="../../kit/base.css">
+<link rel="stylesheet" href="../../kit/mockup/kit.css">
+<!-- ?palette=whiteprint or ?palette=vellum previews a palette; a real page sets data-palette on <html> -->
+<script>{ const p = new URLSearchParams(location.search).get('palette'); if (p) document.documentElement.dataset.palette = p; }</script>
+</head>
+<body>
+<div class="app">
+  <header class="bar">
+    <a class="brand" href="index.html"><b>Example Co.</b><span>Delivery planner</span></a>
+    <nav class="modes" aria-label="Pages">
+      <a href="index.html" aria-current="page">Schedule</a>
+      <a href="../deck/index.html">Deck</a>
+      <a href="../../kit/styleguide.html">Style guide</a>
+    </nav>
+    <div class="bar-meta"><span class="sim">Sample data</span></div>
+  </header>
+
+  <main class="work">
+    <section class="canvas" aria-labelledby="dwg-t">
+      <div class="canvas-head">
+        <div>
+          <h1 id="dwg-t">Project A, delivery schedule</h1>
+          <p class="meta" id="dwg-sub"></p>
+        </div>
+        <fieldset class="layers">
+          <legend>Show</legend>
+          <label class="check"><input type="checkbox" data-layer="links" checked><span class="box"></span>Links</label>
+          <label class="check"><input type="checkbox" data-layer="float" checked><span class="box"></span>Float</label>
+          <label class="check"><input type="checkbox" data-layer="dims" checked><span class="box"></span>Dimensions</label>
+        </fieldset>
+      </div>
+      <div class="canvas-sum" id="sum-slot"></div>
+      <div class="drawing" id="drawing"></div>
+      <div class="canvas-foot" role="group" aria-label="Title block">
+        <div class="tb-cell tb-key"><span class="tb-cap">Key</span><ul class="key" aria-label="Key">
+          <li><i class="k-bar"></i>Task</li>
+          <li><i class="k-crit"></i>Critical task</li>
+          <li><i class="k-sel"></i>Selected task</li>
+          <li><i class="k-float"></i>Float</li>
+          <li><i class="k-link"></i>Link</li>
+          <li><i class="k-target"></i>Committed</li>
+          <li><i class="k-band"></i>Forecast ± spread</li>
+        </ul></div>
+        <div class="tb-cell"><span class="tb-cap">Position</span><span class="tb-val coords" id="coords" aria-live="off">Point at the drawing</span></div>
+        <div class="tb-cell"><span class="tb-cap">Grid</span><span class="tb-val" id="tb-grid"></span></div>
+        <div class="tb-cell"><span class="tb-cap">Revision</span><span class="tb-val" id="tb-rev"></span></div>
+        <div class="tb-cell"><span class="tb-cap">Date</span><span class="tb-val" id="tb-date"></span></div>
+      </div>
+    </section>
+
+    <aside class="dock" aria-label="Datasheet">
+      <div class="tabs" role="tablist" aria-label="Datasheet sections">
+        <button class="tab" role="tab" id="t-fc" data-tab="forecast" aria-controls="p-fc">Forecast</button>
+        <button class="tab" role="tab" id="t-tk" data-tab="tasks" aria-controls="p-tk">Tasks <span class="flag status is-caution" id="tk-flag"><i aria-hidden="true"></i><span class="sr-only">has a caution</span></span></button>
+        <button class="tab" role="tab" id="t-ef" data-tab="effort" aria-controls="p-ef">Effort</button>
+        <button class="tab" role="tab" id="t-src" data-tab="sources" aria-controls="p-src">Sources</button>
+      </div>
+
+      <div class="pane" role="tabpanel" id="p-fc" aria-labelledby="t-fc" tabindex="0">
+        <section class="verdict" aria-labelledby="v-t">
+          <h2 class="sr-only" id="v-t">Verdict</h2>
+          <p id="verdict"></p>
+          <div class="headline">
+            <span class="label">Forecast duration</span>
+            <div class="figline"><span class="fig-lg" id="h-dur"></span><span class="tol" id="h-tol"></span><span class="unit">working days</span><span id="h-src"></span></div>
+            <p class="meta" id="h-basis"></p>
+            <p class="meta" id="h-sub"></p>
+          </div>
+        </section>
+        <section aria-labelledby="rg-t">
+          <div class="block-head"><div><h2 id="rg-t"><span class="no">Fig. 2</span>Finish against the commitment</h2><p class="meta">Working days from the start</p></div></div>
+          <div class="chart" id="range"></div>
+          <p class="src" id="rg-src"></p>
+        </section>
+        <section aria-labelledby="ck-t">
+          <div class="block-head"><h2 id="ck-t">Checks</h2></div>
+          <ul class="checks" id="checks"></ul>
+        </section>
+        <section aria-labelledby="ch-t">
+          <div class="block-head"><h2 id="ch-t"><span class="no">Table 1</span>Characteristics</h2></div>
+          <div class="tblwrap"><table class="tbl" id="chars"><thead><tr><th>Parameter</th><th class="r">Value</th><th>Unit</th><th class="s">Source</th></tr></thead><tbody></tbody></table></div>
+        </section>
+      </div>
+
+      <div class="pane" role="tabpanel" id="p-tk" aria-labelledby="t-tk" tabindex="0" hidden>
+        <section aria-labelledby="tt-t">
+          <div class="block-head"><div><h2 id="tt-t"><span class="no">Table 2</span>Tasks</h2><p class="meta">Pick a task here or on the drawing</p></div></div>
+          <div class="tblwrap"><table class="tbl pick" id="ttable"><thead><tr><th>Task</th><th class="r">Duration</th><th class="r">Float</th><th>Unit</th><th>Status</th></tr></thead><tbody></tbody></table></div>
+        </section>
+        <section aria-labelledby="td-t">
+          <div class="block-head"><h2 id="td-t"></h2>
+            <div class="actions" role="group" aria-labelledby="ml-l"><span class="meta" id="ml-l">Most likely</span><button type="button" class="btn" id="m-dn" aria-label="Most likely one day shorter">−1 d</button><button type="button" class="btn" id="m-up" aria-label="Most likely one day longer">+1 d</button></div>
+          </div>
+          <dl class="facts" id="tfacts"></dl>
+          <p class="src" id="m-note" hidden></p>
+        </section>
+        <section aria-labelledby="sp-t">
+          <div class="block-head"><div><h2 id="sp-t"><span class="no">Fig. 3</span>Where the spread comes from</h2><p class="meta">Share of the finish variance, critical tasks; the shares add up to 100 %</p></div></div>
+          <div class="chart" id="spread"></div>
+          <p class="src" id="sp-src"></p>
+        </section>
+      </div>
+
+      <div class="pane" role="tabpanel" id="p-ef" aria-labelledby="t-ef" tabindex="0" hidden>
+        <section aria-labelledby="wk-t">
+          <div class="block-head">
+            <div><h2 id="wk-t"><span class="no">Fig. 4</span>People booked per week</h2><p class="meta" id="wk-sub"></p></div>
+            <div class="seg" id="wk-view" role="group" aria-label="View"><button type="button" value="chart" aria-pressed="true">Chart</button><button type="button" value="table" aria-pressed="false">Table</button></div>
+          </div>
+          <div class="chart" id="weeks"></div>
+          <div class="tblwrap" id="weeks-tbl" hidden><table class="tbl"><thead><tr><th>Week</th><th class="r">People</th><th class="r">Effort</th><th>Unit</th></tr></thead><tbody></tbody></table></div>
+          <p class="src" id="wk-src"></p>
+        </section>
+        <section aria-labelledby="cs-t">
+          <div class="block-head"><h2 id="cs-t"><span class="no">Table 4</span>Cost by workstream</h2></div>
+          <div class="tblwrap"><table class="tbl" id="costs"><thead><tr><th>Workstream</th><th class="r">Cost</th><th>Unit</th><th class="s">Source</th></tr></thead><tbody></tbody></table></div>
+        </section>
+      </div>
+
+      <div class="pane" role="tabpanel" id="p-src" aria-labelledby="t-src" tabindex="0" hidden>
+        <section aria-labelledby="sr-t">
+          <div class="block-head"><div><h2 id="sr-t"><span class="no">Table 5</span>Source register</h2><p class="meta">Every figure on this page names one of these</p></div></div>
+          <div class="tblwrap"><table class="tbl" id="register"><thead><tr><th class="s">Mark</th><th>Source</th><th>Status</th></tr></thead><tbody></tbody></table></div>
+        </section>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<script src="../../kit/mockup/kit.js"></script>
+<script src="data.js"></script>
+<script>
+(function () {
+  'use strict';
+  const S = window.SHEET, P = window.PROJECT, f = S.fmt, $ = (id) => document.getElementById(id);
+  const mark = (id) => S.srcmark(id, P.sources);
+  const base = Object.fromEntries(P.tasks.map((t) => [t.id, t.m]));
+  S.sources(P.sources);
+  let d = P.derive(), sel = d.checks.length ? d.checks[0].task : d.path[0].id;
+  const d1 = (v) => f.num(v, 1), task = (id) => d.by[id], name = (t) => `${t.id} ${t.name}`;
+  // whole numbers on an axis, one decimal on a value
+  const wfmt = (v) => (Number.isInteger(v) ? f.int(v) : d1(v));
+
+  // ---------- the drawing ----------
+  const dwg = S.timeline($('drawing'), d.drawing, {
+    sel,
+    aria: 'Schedule of project A, working days from the start',
+    label: (r) => `${r.id} ${r.label}, ${d1(r.end - r.start)} working days, ${r.critical ? 'critical' : `${d1(r.float)} days of float`}`,
+    onSelect: (id) => { sel = id; renderTasks(); },
+    onPointer: (p) => { $('coords').textContent = p ? `Day ${d1(p.t)}${p.row ? `, row ${p.row}` : ''}` : 'Point at the drawing'; }
+  });
+  $('tb-grid').textContent = `${f.int(P.grid)} d`;
+  $('tb-rev').textContent = f.int(P.rev.no);
+  $('tb-date').textContent = P.rev.date;
+  document.querySelectorAll('[data-layer]').forEach((c) => c.addEventListener('change', () => dwg.layers({ [c.dataset.layer]: c.checked })));
+
+  // ---------- forecast ----------
+  const range = S.mount($('range'), (w) => {
+    const lo = Math.floor(Math.min(P.committed, d.finish - 2 * d.sd) / P.grid) * P.grid, hi = Math.ceil(Math.max(P.committed, d.finish + 2 * d.sd) / P.grid) * P.grid;
+    return S.range({ width: w, min: lo, max: hi, value: d.finish, tol: d.sd, target: P.committed, targetLabel: 'Committed', unit: 'd',
+      aria: `Forecast duration ${d1(d.finish)} plus or minus ${d1(d.sd)} working days, against a committed ${d1(P.committed)}` });
+  });
+  function renderForecast() {
+    $('dwg-sub').innerHTML = `<span class="no">Fig. 1</span>${f.int(d.tasks.length)} tasks in ${f.int(P.workstreams.length)} workstreams, working days from ${P.start}`;
+    const late = d.late;
+    $('verdict').innerHTML = S.status(d.verdict, late > 0 ? `Finishes ${d1(late)} working days after the committed date` : `Finishes ${d1(-late)} working days before the committed date`);
+    $('h-dur').textContent = d1(d.finish);
+    $('h-tol').textContent = `± ${d1(d.sd)}`;
+    $('h-src').innerHTML = mark('S2');
+    $('h-basis').innerHTML = `Tolerance: one spread of the three-point estimates, summed along the critical path ${mark('S2')}`;
+    $('h-sub').innerHTML = `Ends ${d.finishDate}; committed end ${d.committedDate} ${mark('S1')}`;
+    $('rg-src').innerHTML = `Estimates ${mark('S2')}, commitment ${mark('S1')}. The shaded band is one spread either side.`;
+    $('checks').innerHTML = d.checks.map((c) => {
+      const t = task(c.task);
+      if (c.share != null) return [c.kind, `${name(t)} carries ${f.pct(c.share, 0)} of the spread`, `Its pessimistic estimate is ${f.int(t.p - t.m)} days above its most likely one (Fig. 3) ${mark('S2')}.`];
+      return c.kind === 'pass'
+        ? [c.kind, `${name(t)} can run to its pessimistic estimate`, `Its ${d1(t.float)} days of float cover a ${d1(c.slip)} day slip (Table 2). The price is a draft ${mark(c.src)}.`]
+        : [c.kind, `${name(t)} would move the finish at its pessimistic estimate`, `Its ${d1(t.float)} days of float are short of a ${d1(c.slip)} day slip (Table 2). The price is a draft ${mark(c.src)}.`];
+    }).map(([k, w, what]) => `<li>${S.status(k, w)}<span class="what">${what}</span></li>`).join('');
+    const rows = [
+      ['Forecast duration', d1(d.finish), 'working days', 'S2'],
+      ['Spread, one σ', d1(d.sd), 'working days', 'S2'],
+      ['Committed duration', d1(P.committed), 'working days', 'S1'],
+      ['Forecast end', d.finishDate, 'date', 'S6'],
+      ['Critical tasks', `${f.int(d.critical)} of ${f.int(d.tasks.length)}`, 'count', 'S1'],
+      ['Effort', f.int(d.effort), 'person-days', 'S3'],
+      ['Cost', `${d1(d.cost)} ± ${d1(d.costSd)}`, 'USD thousand', 'S4']
+    ];
+    $('chars').tBodies[0].innerHTML = rows.map((r) => `<tr><td>${r[0]}</td><td class="r">${r[1]}</td><td class="u">${r[2]}</td><td class="s">${mark(r[3])}</td></tr>`).join('');
+    $('tk-flag').hidden = !d.checks.some((c) => c.kind !== 'pass');
+  }
+
+  // ---------- tasks ----------
+  const spread = S.mount($('spread'), (w) => S.ranked({ width: w, rows: d.shares, unit: '%', fmt: (v) => f.num(v, 0),
+    aria: `Share of the finish variance, largest first: ${[...d.shares].sort((a, b) => b.v - a.v).map((s) => `${s.label} ${f.num(s.v, 0)} percent`).join(', ')}` }));
+  function renderTasks() {
+    $('ttable').tBodies[0].innerHTML = d.tasks.map((t) => `<tr class="${t.id === sel ? 'is-sel' : ''}"><td><button type="button" class="rowbtn" data-task="${t.id}" aria-pressed="${t.id === sel}">${S.esc(name(t))}</button></td><td class="r">${d1(t.te)}</td><td class="r">${d1(t.float)}</td><td class="u">d</td><td>${t.critical ? S.status('caution', 'Critical') : S.status('pass', 'Float')}</td></tr>`).join('');
+    const t = task(sel), ws = P.workstreams.find((w) => w.id === t.ws), src = P.tasks.find((x) => x.id === sel);
+    $('td-t').innerHTML = `<span class="no">Table 3</span>${S.esc(name(t))}`;
+    $('m-dn').disabled = src.m <= src.o;
+    $('m-up').disabled = src.m >= src.p;
+    const fact = (k, v, u, s) => `<dt>${k}</dt><dd>${v}${u ? `<span class="unit">${u}</span>` : ''}${s ? mark(s) : ''}</dd>`;
+    $('tfacts').innerHTML = fact('Workstream', S.esc(ws.label), '', 'S1')
+      + fact('Optimistic', f.int(t.o), 'd', 'S2') + fact('Most likely', f.int(t.m), 'd', 'S2') + fact('Pessimistic', f.int(t.p), 'd', 'S2')
+      + fact('Expected', d1(t.te), 'd', 'S2') + fact('Spread', d1(t.sd), 'd', 'S2')
+      + fact('Starts after', d1(t.es), 'd', '') + fact('Float', d1(t.float), 'd', '')
+      + fact('People', f.int(t.people), '', 'S3') + fact('Effort', d1(t.effort), 'person-days', 'S3')
+      + fact('Cost', d1(t.cost), 'USD thousand', t.buy ? 'S5' : 'S4');
+    const dm = src.m - base[sel];
+    $('m-note').hidden = !dm;
+    $('m-note').textContent = dm ? `Most likely set ${f.int(Math.abs(dm))} d ${dm > 0 ? 'above' : 'below'} the estimate; every figure on this page follows it.` : '';
+    $('sp-src').innerHTML = `Three-point estimates ${mark('S2')}. Spreads add as squares, so a long tail on one task outweighs several short ones.`;
+  }
+  $('ttable').addEventListener('click', (e) => { const b = e.target.closest('[data-task]'); if (b) { sel = b.dataset.task; dwg.select(sel); renderTasks(); } });
+  const step = (by) => { const t = P.tasks.find((x) => x.id === sel); t.m = Math.max(t.o, Math.min(t.p, t.m + by)); d = P.derive(); dwg.redraw(d.drawing); renderAll(); };
+  $('m-dn').addEventListener('click', () => step(-1));
+  $('m-up').addEventListener('click', () => step(1));
+
+  // ---------- effort ----------
+  let view = 'chart';
+  const weeks = S.mount($('weeks'), (w) => S.columns({ width: w, height: Math.round(Math.max(220, Math.min(320, w * 0.62))), rows: d.weeks, extreme: 'max', fmt: wfmt,
+    aria: `People booked per week: ${d.weeks.map((x) => `${x.label} ${d1(x.v)}`).join('; ')}.` }),
+  { readout: (i) => { const x = d.weeks[i]; return `<b>Week ${i + 1}</b><span class="where">${d1(x.v)} people on average</span><span class="where">${d1(x.v * P.grid)} person-days</span><span class="from">Sources S2, S3</span>`; } });
+  S.seg($('wk-view'), (v) => { view = v; $('weeks').hidden = v !== 'chart'; $('weeks-tbl').hidden = v !== 'table'; if (v === 'chart') weeks.redraw(); });
+  function renderEffort() {
+    const peak = d.weeks.reduce((b, x, i) => (x.v > d.weeks[b].v ? i : b), 0);
+    $('wk-sub').textContent = `People on average across each working week; the peak is week ${peak + 1}`;
+    $('wk-src').innerHTML = `Staffing ${mark('S3')}, task dates from the estimates ${mark('S2')}.`;
+    $('weeks-tbl').querySelector('tbody').innerHTML = d.weeks.map((x, i) => `<tr><td>Week ${i + 1}</td><td class="r">${d1(x.v)}</td><td class="r">${d1(x.v * P.grid)}</td><td class="u">person-days</td></tr>`).join('');
+    $('costs').tBodies[0].innerHTML = d.streams.map((s) => `<tr><td>${S.esc(s.label)}</td><td class="r">${d1(s.cost)}</td><td class="u">USD thousand</td><td class="s">${mark('S4')}${d.tasks.some((t) => t.ws === s.id && t.buy) ? ' ' + mark('S5') : ''}</td></tr>`).join('')
+      + `<tr class="total"><td>Project A</td><td class="r">${d1(d.cost)} ± ${d1(d.costSd)}</td><td class="u">USD thousand</td><td></td></tr>`;
+    if (view === 'chart') weeks.redraw();
+  }
+
+  // ---------- sources ----------
+  // "Used in" is read back from the page: every caption whose block cites the mark, so the column cannot drift from the marks
+  function usedIn(id) {
+    const where = new Set();
+    document.querySelectorAll(`.pane:not(#p-src) [data-src="${id}"]`).forEach((m) => {
+      const sec = m.closest('section'), no = sec && sec.querySelector('h2 .no');
+      where.add(no ? no.textContent : sec ? sec.querySelector('h2').textContent : '');
+    });
+    return [...where].filter(Boolean).map((w) => w.replace(/ /g, String.fromCharCode(160))).join(', ') || 'Not cited';
+  }
+  function renderSources() {
+    $('register').tBodies[0].innerHTML = Object.entries(P.sources).map(([id, e]) => `<tr><td class="s">${mark(id).replace(/ <span class="unverified">.*<\/span>$/, '')}</td><td><b>${S.esc(e.title)}</b><br><span class="meta">${S.esc(e.source)}</span><br><span class="meta">Used in ${usedIn(id)}</span></td><td>${e.verified === false ? S.status('caution', 'Unverified') : S.status('pass', 'Checked')}<br><span class="meta">${e.date}</span></td></tr>`).join('');
+  }
+
+  // on a narrow screen the verdict and the headline figure lead, above the drawing; a wide sheet opens the Forecast pane on them
+  const narrow = matchMedia('(max-width: 899px)'), verdict = document.querySelector('.verdict'), home = verdict.parentNode;
+  const placeVerdict = () => (narrow.matches ? $('sum-slot') : home).prepend(verdict);
+  narrow.addEventListener('change', placeVerdict);
+  placeVerdict();
+
+  function renderAll() { renderForecast(); renderTasks(); renderEffort(); renderSources(); range.redraw(); spread.redraw(); }
+  renderAll();
+  // a pane mounts its charts at zero width while hidden, so draw them when it opens
+  S.tabs(document.querySelector('[role=tablist]'), { onChange: () => { range.redraw(); spread.redraw(); if (view === 'chart') weeks.redraw(); } });
+})();
+</script>
+</body>
+</html>
