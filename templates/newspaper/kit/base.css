@@ -1,0 +1,61 @@
+/* base.css: reset, type and browser surfaces of the newspaper world for plain pages (styleguide.html).
+   Import after tokens.css. Mockups use mockup/kit.css instead; decks use deck/chartbook.css.
+   Rows are separated by rules and space, never by boxes. */
+
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400..800&family=Source+Serif+4:opsz,wght@8..60,400..700&display=swap');
+
+/* ---------- Reset ---------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  font-family: var(--sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+img, svg, video { display: block; max-width: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; background: none; border: 0; }
+a { color: inherit; text-decoration-thickness: var(--hair); text-underline-offset: 0.18em; }
+a:hover { text-decoration-thickness: 2px; }
+table { border-collapse: collapse; width: 100%; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: var(--lh-head); text-wrap: balance; }
+p { text-wrap: pretty; }
+ul, ol { list-style: none; }
+code { font-size: 1em; }
+
+/* ---------- Browser surfaces ---------- */
+::selection { background: var(--paper-2); color: var(--ink); }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+* { scrollbar-width: thin; scrollbar-color: var(--cmp) transparent; }
+input { caret-color: var(--ink); }
+
+/* ---------- Type ---------- */
+.serif { font-family: var(--serif); }
+.muted { color: var(--ink-2); }
+.label { color: var(--ink-3); }
+.alarm { color: var(--alarm); font-weight: 600; }
+.warn { color: var(--warn); font-weight: 600; }
+
+/* ---------- Rules: the only divider ---------- */
+.rule { border: 0; border-top: var(--hair) solid var(--rule); }
+.rule-head { border: 0; border-top: var(--rule-head) solid var(--ink); }
+
+/* ---------- Tables: hairlines between rows, an ink rule under the head ---------- */
+.table th { text-align: left; font-weight: 600; color: var(--ink-3); padding: var(--s-2) var(--s-4) var(--s-2) 0; border-bottom: var(--rule-head) solid var(--ink); }
+.table td { padding: var(--row-pad) var(--s-4) var(--row-pad) 0; border-bottom: var(--hair) solid var(--rule); vertical-align: top; }
+.table .r { text-align: right; }
+.table th:last-child, .table td:last-child { padding-right: 0; }
+
+/* ---------- Controls ---------- */
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 var(--s-5); border-radius: var(--r-ctl); font-weight: 600; transition: background var(--d-fast) var(--ease); }
+.btn-ink { background: var(--ink); color: var(--paper); }
+.btn-ghost { border: var(--hair) solid var(--cmp); }
+.btn-ghost:hover { background: var(--paper-2); }
+.input { width: 100%; min-height: 44px; padding: 0 var(--s-4); border: var(--hair) solid var(--cmp); border-radius: var(--r-ctl); background: var(--field); }
+.input:hover { border-color: var(--ink-3); }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }

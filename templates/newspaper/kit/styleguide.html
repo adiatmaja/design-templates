@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Style guide - newspaper world</title>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="base.css">
+  <style>
+    body { padding: var(--s-12) 0 var(--s-24); }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 0 var(--s-6); }
+    .mast { display: flex; align-items: baseline; gap: var(--s-4); padding-bottom: var(--s-3); border-bottom: var(--rule-head) solid var(--ink); }
+    .mast b { font-family: var(--serif); font-size: var(--fs-flag); font-weight: 700; }
+    h1 { font-size: var(--fs-h1); margin-top: var(--s-8); }
+    .lead { margin-top: var(--s-2); max-width: 70ch; }
+    section { margin-top: var(--s-16); padding-top: var(--s-4); border-top: var(--rule-head) solid var(--ink); }
+    section > h2 { font-size: var(--fs-h2); margin-bottom: var(--s-6); }
+    .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); gap: var(--s-6) var(--s-4); }
+    .sw .c { height: 3.5rem; }
+    .sw .m { padding-top: var(--s-2); border-top: var(--hair) solid var(--rule); }
+    .sw .m b { display: block; }
+    .specimen > div { display: grid; grid-template-columns: 12rem 1fr; align-items: baseline; gap: var(--s-6); padding: var(--s-3) 0; border-bottom: var(--hair) solid var(--rule); }
+    .rules > div { display: grid; grid-template-columns: 12rem 1fr; align-items: center; gap: var(--s-6); padding: var(--s-4) 0; }
+    .rules i { display: block; background: var(--ink); }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-10); }
+    .two h3 { font-size: var(--fs-h2); margin-bottom: var(--s-3); }
+    .two li { padding: var(--s-2) 0; border-bottom: var(--hair) solid var(--rule); }
+    @media (max-width: 720px) { .two, .specimen > div, .rules > div { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="mast"><b>Style guide</b><span class="muted">newspaper world</span></div>
+    <h1>Newspaper World</h1>
+    <p class="muted lead">A market-data page: grey paper, ink, hairlines, and ink rules in place of boxes. Every value here is read from <code>tokens.css</code>; contrast ratios are computed when the page opens.</p>
+
+    <section id="colour">
+      <h2>Colour</h2>
+      <div class="swatches" id="swatches"></div>
+    </section>
+
+    <section id="type">
+      <h2>Type</h2>
+      <div class="specimen">
+        <div><span class="label">Serif, headline figure</span><span class="serif" style="font-size:var(--fs-fig)">$38,904</span></div>
+        <div><span class="label">Serif, page title</span><span class="serif" style="font-size:var(--fs-h1);font-weight:600">Revenue summary</span></div>
+        <div><span class="label">Serif, block heading</span><span class="serif" style="font-size:var(--fs-h2);font-weight:600">Data completeness</span></div>
+        <div><span class="label">Grotesk, data</span><span>Store 2, 09:40, every 5 minutes, $5.00</span></div>
+        <div><span class="label">Grotesk, alarm</span><span><span class="alarm">Disconnected:</span> exit terminal, since 08:12</span></div>
+      </div>
+    </section>
+
+    <section id="rules">
+      <h2>Rules</h2>
+      <div class="rules">
+        <div><span class="label">1 px, between rows</span><i style="height:var(--hair);background:var(--rule)"></i></div>
+        <div><span class="label">3 px, under the flag and block heads</span><i style="height:var(--rule-head)"></i></div>
+        <div><span class="label">6 px, the selected metric tab</span><i style="height:var(--rule-sel)"></i></div>
+      </div>
+    </section>
+
+    <section id="deck">
+      <h2>Deck Scale</h2>
+      <table class="table">
+        <thead><tr><th>Token</th><th class="r">Size</th><th>Use</th></tr></thead>
+        <tbody id="deck-scale"></tbody>
+      </table>
+    </section>
+
+    <section id="components">
+      <h2>Components</h2>
+      <p class="muted">Page components live in <code>mockup/kit.css</code> and <code>mockup/kit.js</code>; see them working in <a href="../examples/dashboard/index.html">the example dashboard</a>. Slide templates and exhibit builders live in <code>deck/chartbook.js</code>; see <a href="../examples/deck/index.html">the example deck</a>.</p>
+    </section>
+
+    <section id="rulebook">
+      <h2>Do and Don't</h2>
+      <div class="two">
+        <div><h3>Do</h3><ul>
+          <li>Titles state the finding in a few words.</li>
+          <li>Group with rules, space and tables.</li>
+          <li>Tabular figures with a source line.</li>
+          <li>Colour only for alarms, always with a word and a shape.</li>
+          <li>Values change without animation; only hover and focus move.</li>
+        </ul></div>
+        <div><h3>Don't</h3><ul>
+          <li>Cards, KPI tiles, pill chips, icons in coloured boxes.</li>
+          <li>Gradients, block shadows, radius everywhere.</li>
+          <li>Donuts, gauges, count-ups, fade-ins, uppercase eyebrows.</li>
+          <li>Red for every decrease.</li>
+          <li>A client's brand colours as the page palette.</li>
+        </ul></div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const css = getComputedStyle(document.documentElement);
+    const v = (n) => css.getPropertyValue(n).trim();
+    const lum = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)).reduce((s, c, i) => s + c * [0.2126, 0.7152, 0.0722][i], 0);
+    const ratio = (a, b) => { const [h, l] = [lum(a), lum(b)].sort((x, y) => y - x); return ((h + 0.05) / (l + 0.05)).toFixed(1); };
+    const groups = [
+      ['Paper', ['--paper', '--paper-2', '--field', '--rule']],
+      ['Ink', ['--ink', '--ink-2', '--ink-3']],
+      ['Comparison', ['--cmp', '--cmp-fill']],
+      ['Alarm', ['--alarm', '--warn', '--warn-mark']]
+    ];
+    const paper = v('--paper');
+    const host = document.getElementById('swatches');
+    for (const [name, toks] of groups) {
+      for (const t of toks) {
+        const hex = v(t);
+        host.insertAdjacentHTML('beforeend', `<div class="sw"><div class="c" style="background:var(${t})"></div><div class="m"><b>${t.slice(2)}</b>${hex.toUpperCase()}<br><span class="label">${name}, ${ratio(hex, paper)}:1 on paper</span></div></div>`);
+      }
+    }
+    const scale = [['--deck-title', 'serif title, the finding'], ['--deck-sub', 'one line under the title'], ['--deck-body', 'grotesk text'], ['--deck-label', 'axis, source line; the floor'], ['--deck-fig', 'one serif figure'], ['--deck-pad', 'canvas margin']];
+    document.getElementById('deck-scale').innerHTML = scale.map(([t, use]) => `<tr><td><code>${t}</code></td><td class="r">${v(t)}</td><td>${use}</td></tr>`).join('');
+  </script>
+</body>
+</html>
