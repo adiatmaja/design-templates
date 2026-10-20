@@ -1,0 +1,250 @@
+/* kit.css: page components of the datasheet world (../../DESIGN.md). Load after ../tokens.css and ../base.css.
+   The page is a drawing beside a datasheet: a full-height canvas on the left, a tabbed dock on the right, ruled
+   tables in place of boxes. Behaviour lives in kit.js (window.SHEET). No colour value appears here: every colour is
+   a token. Sizes follow the Carbon 2x grid; the smallest text is --fs-meta (14 px). */
+
+/* ---------- Page shell: a bar over the work area, the whole viewport, nothing scrolls but the dock pane ---------- */
+html.sheet, html.sheet body { height: 100%; }
+@media (min-width: 2200px) { html.sheet { font-size: 17px; } }
+.app { display: grid; grid-template-rows: auto minmax(0, 1fr); height: 100dvh; min-height: 0; }
+
+/* The bar: brand, the page row, the sample-data stamp. A 2 px ink rule under it is the sheet's title rule */
+.bar { display: flex; align-items: center; gap: var(--s-8); min-height: 3.5rem; padding: 0 var(--s-6); border-bottom: var(--rule-strong) solid var(--ink); }
+.brand { display: flex; align-items: baseline; gap: var(--s-3); color: var(--ink); text-decoration: none; white-space: nowrap; }
+.brand b { font-weight: var(--w-bold); font-size: var(--fs-body); }
+.brand span { color: var(--ink-3); font-size: var(--fs-meta); }
+.modes { display: flex; align-self: stretch; gap: var(--s-1); }
+.modes a { display: inline-flex; align-items: center; padding: 0 var(--s-3); color: var(--ink-2); text-decoration: none; font-weight: var(--w-med); border-bottom: var(--rule-sel) solid transparent; margin-bottom: calc(-1 * var(--rule-strong)); }
+.modes a:hover { color: var(--ink); border-bottom-color: var(--edge); }
+.modes a[aria-current] { color: var(--mark); border-bottom-color: var(--mark); }
+.bar-meta { margin-left: auto; display: flex; align-items: center; gap: var(--s-4); font-size: var(--fs-meta); color: var(--ink-3); white-space: nowrap; }
+/* the stamp every simulated screen carries: an ink frame around two words, the one boxed label on a page */
+.sim { display: inline-flex; align-items: center; min-height: 1.5rem; padding: 0 var(--s-2); border: var(--hair) solid var(--ink); color: var(--ink); font-weight: var(--w-bold); }
+
+/* ---------- Work area: canvas | dock ---------- */
+.work { display: grid; grid-template-columns: minmax(0, 1fr) var(--dock-w); min-height: 0; }
+.canvas { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; grid-template-areas: "head" "drawing" "foot"; min-width: 0; min-height: 0; background: var(--sheet-2); }
+.canvas-head { grid-area: head; display: flex; align-items: flex-end; justify-content: space-between; gap: var(--s-6); flex-wrap: wrap; padding: var(--s-4) var(--s-6) var(--s-3); background: var(--sheet); border-bottom: var(--hair) solid var(--rule); }
+.canvas-head h1 { font-size: var(--fs-h1); }
+.canvas-head .meta { margin-top: var(--s-1); }
+.layers { display: flex; align-items: center; gap: var(--s-1) var(--s-6); flex-wrap: wrap; border: 0; }
+.layers legend { float: left; margin-right: var(--s-2); font-size: var(--fs-meta); color: var(--ink-3); }
+.drawing { grid-area: drawing; position: relative; min-height: 0; overflow: hidden; }
+.drawing > svg { position: absolute; inset: 0; touch-action: pan-y; }
+/* The canvas foot is the drawing's title block: captioned fields under a strong rule, the same device as a slide's foot.
+   Each field carries one fact about the drawing (its key, the pointer's position, the grid, the revision). */
+.canvas-foot { grid-area: foot; display: grid; grid-template-columns: minmax(0, 1fr) repeat(4, auto); background: var(--sheet); border-top: var(--rule-strong) solid var(--ink); }
+.tb-cell { display: flex; flex-direction: column; justify-content: center; gap: var(--s-1); min-width: 0; padding: var(--s-2) var(--s-4); border-left: var(--hair) solid var(--rule); }
+.tb-cell:first-child { border-left: 0; padding-left: var(--s-6); }
+.tb-cap { font-family: var(--cond); font-size: var(--fs-meta); color: var(--ink-3); line-height: var(--lh-head); }
+.tb-val { font-family: var(--mono); font-size: var(--fs-meta); color: var(--ink); white-space: nowrap; }
+.coords { min-width: 10rem; }
+/* where the verdict goes on a narrow screen, above the drawing (the page moves it there); a wide sheet keeps it in the dock */
+.canvas-sum { display: none; grid-area: sum; }
+/* a caption number (Fig. 2, Table 1): the handle a note, a check or the source register cites */
+.no { font-family: var(--mono); font-size: var(--fs-meta); font-weight: var(--w-reg); color: var(--ink-3); margin-right: var(--s-2); white-space: nowrap; }
+
+/* ---------- The drawing (SVG classes written by SHEET.timeline) ---------- */
+svg.sheet-svg.d-svg text { font-family: var(--sans); fill: var(--ink); }
+.d-ground { fill: var(--sheet); }
+.d-frame { fill: none; stroke: var(--ink); stroke-width: 1.5; pointer-events: none; }
+.d-grid { stroke: var(--grid); stroke-width: 1; stroke-dasharray: var(--grid-dash); }
+.d-tick { stroke: var(--ink); stroke-width: 1; }
+.d-sep { stroke: var(--ink-3); stroke-width: 1; }
+.d-band { stroke: none; pointer-events: none; }
+.d-hatch-line { stroke: var(--cmp-fill); stroke-width: 1.25; }
+.d-selrow { fill: var(--tint); }
+.d-hit { fill: transparent; cursor: pointer; }
+.d-row-g { outline: none; }
+.d-row-g:hover .d-bar:not(.is-sel) { stroke: var(--ink); }
+.d-bar { fill: var(--sheet); stroke: var(--ink-2); stroke-width: 1.5; pointer-events: none; }
+.d-bar.is-crit { fill: var(--mark-2); stroke: var(--mark-2); }
+.d-bar.is-sel { fill: var(--mark); stroke: var(--mark); }
+.d-bar.is-hover { stroke: var(--ink); }
+.d-float { stroke: var(--ink-3); stroke-width: 1; fill: none; pointer-events: none; }
+.d-link { stroke: var(--ink-3); stroke-width: 1; fill: none; pointer-events: none; }
+.d-link.is-strong { stroke: var(--ink); stroke-width: 1.5; }
+.d-arrow { fill: var(--ink-3); pointer-events: none; }
+.d-arrow.is-strong { fill: var(--ink); }
+.d-mark { stroke-width: 2; pointer-events: none; }
+.d-mark.is-target { stroke: var(--cmp); stroke-dasharray: 6 4; }
+.d-mark.is-forecast { stroke: var(--ink); }
+.d-ext { stroke: var(--ink-3); stroke-width: 1; stroke-dasharray: 2 3; fill: none; pointer-events: none; }
+.d-dim { stroke: var(--ink-3); stroke-width: 1; fill: none; pointer-events: none; }
+svg.d-svg text.d-dimt { font-family: var(--mono); fill: var(--ink-2); pointer-events: none; }
+svg.d-svg .d-dimgap { fill: var(--sheet-2); stroke: none; }
+svg.d-svg text.d-lab { pointer-events: none; }
+svg.d-svg text.d-lab.is-sel { fill: var(--mark); font-weight: var(--w-bold); }
+svg.d-svg text.d-axis { fill: var(--ink-3); }
+svg.d-svg text.d-note { fill: var(--ink-2); paint-order: stroke; stroke: var(--sheet); stroke-width: 4px; stroke-linejoin: round; pointer-events: none; }
+svg.d-svg text.d-note.is-strong { fill: var(--ink); font-weight: var(--w-bold); }
+svg.d-svg .d-mono { font-family: var(--mono); }
+.d-row-g:focus-visible .d-focus { visibility: visible; }
+.d-focus { fill: none; stroke: var(--mark); stroke-width: 2; visibility: hidden; pointer-events: none; }
+
+/* ---------- Key: a drawn sample of every mark the canvas or chart uses ---------- */
+.key { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-1) var(--s-6); font-size: var(--fs-meta); color: var(--ink-2); }
+.key li, .key span { display: inline-flex; align-items: center; gap: var(--s-2); white-space: nowrap; }
+.key i { flex: none; display: inline-block; width: 1rem; height: 0.75rem; }
+.key .k-bar { background: var(--sheet); border: 1.5px solid var(--ink-2); }
+.key .k-crit { background: var(--mark-2); }
+.key .k-sel { background: var(--mark); }
+.key .k-float { height: 0.625rem; border-right: 1px solid var(--ink-3); background: linear-gradient(var(--ink-3), var(--ink-3)) center / 100% 1px no-repeat; }
+.key .k-link { height: 0.625rem; border-left: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); }
+.key .k-band { border-left: 2px solid var(--ink); background: repeating-linear-gradient(45deg, var(--cmp-fill) 0 1.25px, transparent 1.25px 4px); }
+.key .k-target { width: 0; border-left: 2px dashed var(--cmp); }
+.key .k-col { width: 0.75rem; height: 1rem; background: var(--mark); }
+.key .k-line { width: 1.5rem; height: 0; border-top: 2px dashed var(--cmp); }
+
+/* ---------- Dock: tabs over one scrolling pane; panes are built once and toggled with [hidden] ---------- */
+.dock { display: grid; grid-template-rows: auto minmax(0, 1fr); min-height: 0; min-width: 0; border-left: var(--hair) solid var(--rule); background: var(--sheet); }
+.tabs { display: flex; overflow-x: auto; background: var(--sheet-2); border-bottom: var(--hair) solid var(--rule); }
+/* the vertical padding, not only the centring, keeps a label off the bar's rules once it wraps or a shorter height applies */
+.tab { flex: 1 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: var(--s-2); min-height: var(--tab-h); padding: var(--s-2) var(--s-4); color: var(--ink-2); font-weight: var(--w-med); white-space: nowrap; border-bottom: var(--rule-sel) solid transparent; margin-bottom: -1px; transition: color var(--d-fast) var(--ease), border-color var(--d-fast) var(--ease); }
+.tab:hover, .tab.is-hover { color: var(--ink); border-bottom-color: var(--edge); }
+.tab:focus-visible, .tab.is-focus { outline: 2px solid var(--mark); outline-offset: -2px; }
+.tab[aria-selected="true"], .tab.is-on { color: var(--mark); background: var(--sheet); border-bottom-color: var(--mark); }
+.tab:disabled, .tab[aria-disabled="true"], .tab.is-disabled { color: var(--ink-3); cursor: not-allowed; border-bottom-color: transparent; }
+.tab .flag { display: inline-flex; }
+.tab .flag[hidden] { display: none; }
+.tab.is-error { color: var(--fault-ink); }
+.pane { overflow-y: auto; min-height: 0; padding: var(--s-6) var(--s-6) var(--s-12); }
+.pane[hidden] { display: none; }
+.pane > * + * { margin-top: var(--gap-block); }
+.empty { color: var(--ink-2); max-width: var(--measure); }
+
+/* A block inside a pane: a heading over its content, the heading line optionally carrying a key or a switch */
+.block-head { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--s-3) var(--s-4); flex-wrap: wrap; }
+.block-head h2 + .meta, .block-head .sub { margin-top: var(--s-1); }
+.block-head + * { margin-top: var(--gap-in); }
+/* a few buttons beside a block's heading, introduced by a quiet label */
+.actions { display: flex; align-items: center; gap: var(--s-2); }
+.src { font-size: var(--fs-meta); color: var(--ink-3); margin-top: var(--gap-in); max-width: var(--measure); }
+
+/* Verdict: the status line at heading size, then the one figure of the view */
+.verdict .status { font-size: var(--fs-h2); line-height: var(--lh-head); text-wrap: balance; }
+.headline { margin-top: var(--gap-group); }
+.headline .label { color: var(--ink-2); }
+.figline { display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--s-1) var(--s-2); margin-top: var(--s-1); }
+.figline .tol { font-family: var(--cond); font-size: var(--fs-h2); font-weight: var(--w-med); color: var(--ink-2); white-space: nowrap; }
+
+/* ---------- Status: a shape and a word, never colour alone. pass = circle, caution = ringed triangle, fault = square ---------- */
+.status { display: inline-flex; align-items: baseline; gap: var(--s-2); font-weight: var(--w-bold); }
+.status > i { flex: none; position: relative; display: inline-block; width: 0.75em; height: 0.75em; align-self: center; }
+.status.is-pass { color: var(--pass-ink); }
+.status.is-pass > i { border-radius: 50%; background: var(--pass); }
+.status.is-caution { color: var(--caution-ink); }
+.status.is-caution > i { width: 0.875em; clip-path: polygon(50% 0, 100% 100%, 0 100%); background: var(--caution-ink); }
+.status.is-caution > i::after { content: ''; position: absolute; inset: 0.22em 0.14em 0.09em; clip-path: polygon(50% 0, 100% 100%, 0 100%); background: var(--caution); }
+.status.is-fault { color: var(--fault-ink); }
+.status.is-fault > i { background: var(--fault); }
+.status.is-none { color: var(--ink-3); font-weight: var(--w-reg); }
+.status.is-none > i { height: 0; border-top: 2px solid var(--ink-3); }
+
+/* A list of checks, worst first: one ruled row each */
+.checks li { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: var(--s-1) var(--s-4); padding: var(--s-3) 0; border-bottom: var(--hair) solid var(--rule); }
+.checks li:first-child { border-top: var(--rule-strong) solid var(--ink); }
+.checks .what { grid-column: 1 / -1; color: var(--ink-2); }
+
+/* ---------- Source mark: every figure names its source. A 24 px target around a mono reference ---------- */
+/* the negative margin lets the target overlap the text beside it, so a mark before a comma reads as one word */
+.srcmark { display: inline-flex; align-items: center; justify-content: center; min-width: 1.5rem; min-height: 1.5rem; padding: 0 0.125rem; margin: 0 -0.125rem; font-family: var(--mono); font-size: var(--fs-meta); font-weight: var(--w-reg); line-height: 1; color: var(--ink-3); text-decoration: underline dotted var(--edge); text-underline-offset: 0.25em; border-radius: var(--r-ctl); vertical-align: baseline; }
+.srcmark:hover, .srcmark.is-hover { color: var(--mark); text-decoration-color: var(--mark); text-decoration-style: solid; }
+.srcmark:focus-visible, .srcmark.is-focus { outline: 2px solid var(--mark); outline-offset: 0; }
+.srcmark[aria-expanded="true"], .srcmark.is-on { color: var(--mark); background: var(--tint); text-decoration: none; }
+.srcmark.is-unverified { color: var(--caution-ink); text-decoration-color: var(--caution-ink); text-decoration-style: dashed; }
+.unverified { font-size: var(--fs-meta); font-weight: var(--w-bold); color: var(--caution-ink); }
+.nomark { color: var(--ink-3); }
+
+/* The source card: it floats, so it is the one place a page uses elevation */
+.pop { position: fixed; z-index: 40; width: min(24rem, calc(100vw - 2rem)); padding: var(--s-4) var(--s-4) var(--s-3); background: var(--sheet); box-shadow: var(--lift); }
+.pop[hidden] { display: none; }
+.pop-head { display: flex; align-items: baseline; gap: var(--s-2); padding-bottom: var(--s-2); border-bottom: var(--rule-strong) solid var(--ink); }
+.pop-head .mono { color: var(--ink-3); font-size: var(--fs-meta); }
+.pop-head b { font-weight: var(--w-bold); }
+.pop dl { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); }
+.pop dt, .pop dd { padding: var(--s-2) 0; border-bottom: var(--hair) solid var(--rule); }
+.pop dt { color: var(--ink-3); font-size: var(--fs-meta); padding-top: calc(var(--s-2) + 0.125rem); }
+.pop dd { overflow-wrap: anywhere; }
+.pop dd .mono { font-size: var(--fs-meta); }
+.pop-foot { display: flex; justify-content: flex-end; margin-top: var(--s-3); }
+
+/* ---------- Tables: a 2 px ink rule under the head, hairlines between rows, units in their own column ---------- */
+.tbl th { text-align: left; vertical-align: bottom; font-size: var(--fs-meta); font-weight: var(--w-reg); color: var(--ink-3); padding: 0 var(--s-3) var(--s-2) 0; border-bottom: var(--rule-strong) solid var(--ink); }
+.tbl td { height: var(--row); padding: var(--s-2) var(--s-3) var(--s-2) 0; border-bottom: var(--hair) solid var(--rule); vertical-align: middle; line-height: var(--lh-row); }
+.tbl :is(th, td):last-child { padding-right: 0; }
+.tbl .r { text-align: right; white-space: nowrap; }
+.tbl .u { font-size: var(--fs-meta); color: var(--ink-3); white-space: nowrap; }
+.tbl .s { width: 1%; white-space: nowrap; }
+.tbl .k { font-weight: var(--w-bold); }
+.tbl tr.total td { border-top: var(--rule-strong) solid var(--ink); border-bottom: 0; font-weight: var(--w-bold); }
+/* selectable rows: the row button is the target; the row shows hover, focus, selected and excluded */
+.tbl.pick tbody tr { transition: background-color var(--d-fast) var(--ease); }
+.tbl.pick tbody tr:hover, .tbl.pick tbody tr.is-hover { background: var(--sheet-2); }
+.tbl.pick tbody tr.is-sel { background: var(--tint); }
+.tbl.pick tbody tr.is-sel .rowbtn { color: var(--mark); }
+.tbl.pick tbody tr.is-off td { color: var(--ink-3); }
+.rowbtn { display: inline-flex; align-items: center; min-height: 1.5rem; font-weight: var(--w-bold); color: var(--ink); border-radius: var(--r-ctl); }
+.rowbtn:focus-visible, .rowbtn.is-focus { outline: 2px solid var(--mark); outline-offset: 2px; }
+.rowbtn:disabled { color: var(--ink-3); cursor: not-allowed; }
+/* relative, so a visually hidden label inside the table stays in the scroller instead of widening the page */
+.tblwrap { overflow-x: auto; position: relative; }
+
+/* A ruled list of facts: term left, value right */
+.facts { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
+.facts dt, .facts dd { padding: var(--s-2) 0; border-bottom: var(--hair) solid var(--rule); min-height: var(--row); display: flex; align-items: center; }
+.facts dt { color: var(--ink-2); }
+.facts dd { justify-content: flex-end; gap: var(--s-1); padding-left: var(--s-4); text-align: right; white-space: nowrap; }
+.facts > :nth-child(-n+2) { border-top: var(--rule-strong) solid var(--ink); }
+
+/* ---------- Charts (SVG written by SHEET.columns, SHEET.range, SHEET.ranked; mounted by SHEET.mount) ---------- */
+.chart { position: relative; }
+.chart:focus-visible { outline: none; }
+.chart svg { max-width: 100%; height: auto; overflow: visible; }
+.chart svg text, svg.sheet-svg text { font-family: var(--sans); fill: var(--ink-3); }
+.c-grid { stroke: var(--rule); stroke-width: 1; }
+.c-base { stroke: var(--ink); stroke-width: 1.5; }
+.c-col { fill: var(--mark); }
+.c-col.is-hv { fill: var(--ink); }
+.c-hl { fill: var(--sheet-2); }
+.c-ref { stroke: var(--cmp); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.c-bar { fill: var(--mark); }
+.c-bar.b2 { fill: var(--mark-2); }
+svg text.c-strong { fill: var(--ink); font-weight: var(--w-bold); }
+svg text.c-val { fill: var(--ink); }
+.r-track { fill: var(--track); }
+.r-band { fill: var(--band); }
+.r-mark { fill: var(--ink); }
+.r-tick { stroke: var(--ink-3); stroke-width: 1; }
+.r-target { stroke: var(--cmp); stroke-width: 2; stroke-dasharray: 4 3; }
+/* the readout: one box that follows the pointer, also opened by focus and the arrow keys */
+.readout { position: absolute; z-index: 5; min-width: 11rem; max-width: 18rem; padding: var(--s-2) var(--s-3); background: var(--sheet); box-shadow: var(--lift); pointer-events: none; line-height: var(--lh-row); }
+.readout[hidden] { display: none; }
+.readout b { font-weight: var(--w-bold); }
+.readout .where { display: block; color: var(--ink-2); }
+.readout .from { display: block; font-size: var(--fs-meta); color: var(--ink-3); margin-top: var(--s-1); }
+.chart.is-focus .readout { box-shadow: var(--lift), 0 0 0 2px var(--mark); }
+
+/* ---------- Narrow screens: the dock goes under the canvas; the canvas keeps a usable height ---------- */
+@media (max-width: 899px) {
+  .app { height: auto; min-height: 100dvh; }
+  .bar { flex-wrap: wrap; gap: 0 var(--s-6); padding: var(--s-2) var(--s-4) 0; }
+  .modes { order: 3; flex-basis: 100%; overflow-x: auto; min-height: var(--ctl-h); }
+  .modes a:first-child { padding-left: 0; }
+  .work { grid-template-columns: minmax(0, 1fr); }
+  /* the verdict leads, then the drawing, capped so the reader is never a full screen from the figures */
+  .canvas { grid-template-rows: auto auto minmax(20rem, min(52vh, 110vw)) auto; grid-template-areas: "head" "sum" "drawing" "foot"; }
+  .canvas-head { padding-left: var(--s-4); padding-right: var(--s-4); }
+  .canvas-sum { display: block; padding: var(--s-4) var(--s-4) var(--s-6); background: var(--sheet); border-bottom: var(--hair) solid var(--rule); }
+  .canvas-foot { grid-template-columns: minmax(0, 1fr) repeat(3, auto); }
+  .canvas-foot .tb-key { grid-column: 1 / -1; padding-left: var(--s-4); border-bottom: var(--hair) solid var(--rule); }
+  .canvas-foot .tb-key + .tb-cell { border-left: 0; padding-left: var(--s-4); }
+  .coords { min-width: 0; white-space: normal; }
+  .dock { border-left: 0; border-top: var(--rule-strong) solid var(--ink); }
+  .pane { overflow: visible; padding: var(--s-6) var(--s-4) var(--s-12); }
+  .tab { padding: var(--s-2) var(--s-3); }
+}
+
+@media print {
+  .readout, .pop { display: none !important; }
+}
