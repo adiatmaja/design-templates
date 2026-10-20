@@ -43,7 +43,7 @@ stay world-independent.
 
 | Path | Purpose |
 |---|---|
-| `AGENTS.md` | Exact install procedure for coding agents; rules for editing this repo |
+| `CLAUDE.md` (`AGENTS.md` is a symlink to it) | Exact install procedure for coding agents; rules for editing this repo |
 | `guide/process.md` | Brief to verified design, ten steps |
 | `guide/anti-ai-design.md` | Rules against AI-looking design, banned tells, verification |
 | `guide/visualisation.md` | When to draw a chart, how many, how |
