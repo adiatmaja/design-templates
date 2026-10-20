@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en" class="sheet">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Datasheet style guide</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="mockup/kit.css">
+<style>
+  /* the guide's own layout: a numbered document of ruled sections, like the datasheet it describes */
+  html.sheet, html.sheet body { height: auto; }
+  .guide { max-width: 80rem; margin: 0 auto; padding: var(--s-8) var(--s-6) var(--s-16); }
+  .guide > header { display: grid; gap: var(--s-2); padding-bottom: var(--s-6); }
+  .guide > header p { max-width: var(--measure); color: var(--ink-2); }
+  .sec { border-top: var(--rule-strong) solid var(--ink); padding-top: var(--s-4); margin-top: var(--gap-block); }
+  .sec > h2 { display: flex; gap: var(--s-4); align-items: baseline; }
+  .sec > h2 .n { font-family: var(--mono); font-size: var(--fs-body); font-weight: var(--w-reg); color: var(--ink-3); min-width: 1.5rem; }
+  .sec > p.lead { margin-top: var(--s-2); max-width: var(--measure); color: var(--ink-2); }
+  .sec > * + * { margin-top: var(--gap-group); }
+  .sec h3 { margin-top: var(--gap-group); }
+  .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: var(--gap-group) var(--s-12); align-items: start; }
+  .sw { display: inline-block; width: 2.5rem; height: 1.5rem; border: var(--hair) solid var(--rule); vertical-align: middle; }
+  .num { font-family: var(--mono); font-size: var(--fs-meta); color: var(--ink-2); white-space: nowrap; }
+  .type-spec td:last-child { width: 60%; }
+  .space-bar { display: inline-block; height: 0.75rem; background: var(--mark); vertical-align: middle; }
+  .rule-spec { display: block; width: 8rem; background: var(--ink); }
+  /* the state matrix: one row per family, one column per state; specimens are spans, so nothing here is clickable */
+  .matrix td, .matrix th { vertical-align: middle; }
+  .matrix td { padding-top: var(--s-3); padding-bottom: var(--s-3); }
+  .matrix td:first-child { white-space: nowrap; font-weight: var(--w-med); }
+  .matrix .input, .matrix .select { display: flex; align-items: center; width: 9rem; }
+  .matrix .select-wrap { display: inline-block; width: 9rem; }
+  .matrix .select-wrap .select { width: 100%; }
+  .matrix .tab { min-height: var(--ctl-h); }
+  .na { font-size: var(--fs-meta); color: var(--ink-3); }
+  .bar-spec { width: 7rem; height: 3rem; }
+  /* the focus ring of a drawing row shows on :focus-visible; the specimen shows it at rest */
+  .bar-spec .d-focus { visibility: visible; }
+  .family { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3) var(--s-4); }
+  .live-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: var(--gap-group) var(--s-6); align-items: start; }
+  .out { font-family: var(--mono); font-size: var(--fs-meta); color: var(--ink-2); min-height: var(--row); display: flex; align-items: center; border-top: var(--hair) solid var(--rule); border-bottom: var(--hair) solid var(--rule); padding: 0 var(--s-2); }
+  .mini-dock { border: var(--hair) solid var(--rule); max-width: 32rem; }
+  .mini-dock .pane { padding: var(--s-4); min-height: 6rem; }
+  .mini-drawing { position: relative; height: 22rem; background: var(--sheet-2); border: var(--hair) solid var(--rule); }
+  .mini-drawing > svg { position: absolute; inset: 0; }
+  .mini-drawing + .canvas-foot { margin-top: 0; border-left: var(--hair) solid var(--rule); border-right: var(--hair) solid var(--rule); }
+  .cap { margin: 0 0 var(--gap-in); }
+  /* a text pair is sampled as text; a pair for a mark (a 3:1 floor or none) as a bar, since it never carries text */
+  .pair-sample { display: inline-flex; align-items: center; padding: 0 var(--s-2); min-height: 1.75rem; min-width: 4rem; font-weight: var(--w-bold); }
+  .pair-sample i { display: block; width: 3rem; height: 0.375rem; background: currentColor; }
+  .guide > header .pal-switch { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2) var(--s-4); margin-top: var(--s-2); }
+  /* palette specimens: each carries its own data-palette, so its tokens resolve to that palette whatever the page uses */
+  .pals { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: var(--gap-group) var(--s-6); }
+  .pal { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s-3); align-content: start; padding: var(--s-4); background: var(--sheet); color: var(--ink); border-top: var(--rule-strong) solid var(--ink); }
+  .pal h3 { margin: 0; }
+  .pal .tbl { table-layout: fixed; width: 100%; }
+  .pal .pal-low { white-space: normal; }
+  .pal-tabs { display: flex; border-bottom: var(--hair) solid var(--rule); background: var(--sheet-2); }
+  .pal-tabs .tab { flex: 1 1 0; min-height: var(--ctl-h); padding: var(--s-2); }
+  .pal-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2) var(--s-3); }
+  /* three bars of a drawing: one with float, one critical, one selected */
+  .pal-bars { display: grid; gap: 3px; width: 6rem; margin-left: auto; padding: var(--s-1); background: var(--sheet); border: var(--hair) solid var(--rule); }
+  .pal-bars i { display: block; height: 0.5rem; background: var(--mark-2); }
+  .pal-bars i:nth-child(1) { width: 45%; background: var(--sheet); border: 1.5px solid var(--ink-2); }
+  .pal-bars i:nth-child(2) { width: 50%; margin-left: 20%; }
+  .pal-bars i.on { width: 30%; margin-left: 70%; background: var(--mark); }
+  .dd { display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: var(--gap-group) var(--s-12); }
+  .dd ul li { padding: var(--s-2) 0; border-bottom: var(--hair) solid var(--rule); }
+  .dd h3 { padding-bottom: var(--s-2); border-bottom: var(--rule-strong) solid var(--ink); margin-top: 0; }
+  @media (max-width: 899px) { .guide { padding: var(--s-6) var(--s-4) var(--s-12); } }
+  /* the reference tables scroll sideways on a phone rather than wrap a role one word a line */
+  #swatches, #pairs, #type, #space, #rules, .matrix { min-width: 36rem; }
+  .cols > *, .dd > *, .pals > * { min-width: 0; }
+</style>
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="styleguide.html"><b>Datasheet</b><span>Style guide</span></a>
+  <nav class="modes" aria-label="Pages">
+    <a href="../examples/dashboard/index.html">Dashboard</a>
+    <a href="../examples/deck/index.html">Deck</a>
+    <a href="styleguide.html" aria-current="page">Style guide</a>
+  </nav>
+</header>
+
+<main class="guide">
+  <header>
+    <h1>Datasheet style guide</h1>
+    <div class="pal-switch"><span class="label" id="pal-l">Palette</span><div class="seg" id="palette" role="group" aria-labelledby="pal-l"><button type="button" value="drafting" aria-pressed="true">Drafting</button><button type="button" value="whiteprint" aria-pressed="false">Whiteprint</button><button type="button" value="vellum" aria-pressed="false">Vellum</button></div></div>
+    <p>Every token, every text pair measured in this browser, and every component in every state. The figures below are read from the CSS as it loads, so they cannot drift from the tokens.</p>
+  </header>
+
+  <section class="sec" aria-labelledby="s1">
+    <h2 id="s1"><span class="n">1</span>Colour</h2>
+    <p class="lead">One sheet, three inks, one mark for anything active, greys for comparison, and a fill, ink and tint for each status. Ratios are against the sheet.</p>
+    <div class="tblwrap"><table class="tbl" id="swatches"><thead><tr><th class="s">Swatch</th><th>Token</th><th>Value</th><th class="r">On sheet</th><th>Role</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <section class="sec" aria-labelledby="s2">
+    <h2 id="s2"><span class="n">2</span>Palettes</h2>
+    <p class="lead">Three palettes fill the same roles, so every component works in each. Set one with <span class="mono">data-palette</span> on the html element; the switch at the top sets it for this whole guide, and the tables in 1 and 3 re-measure. Status colours are shared and pass on every ground.</p>
+    <div class="pals">
+      <div class="pal" data-palette="drafting">
+        <h3>Drafting</h3>
+        <p class="meta">Plotter ink on white bond with a solid grid: the printed datasheet. The default.</p>
+        <div class="pal-tabs"><span class="tab is-on">Summary</span><span class="tab">Tasks</span><span class="tab">Cost</span></div>
+        <div class="figline"><span class="fig">64.0</span><span class="unit">working days</span><span class="srcmark">S2</span></div>
+        <table class="tbl pick"><tbody><tr><td><span class="rowbtn">C1 Procure</span></td><td class="r">13.3</td><td><span class="status is-pass"><i aria-hidden="true"></i>Float</span></td></tr><tr class="is-sel"><td><span class="rowbtn">B2 Build</span></td><td class="r">0.0</td><td><span class="status is-caution"><i aria-hidden="true"></i>Critical</span></td></tr></tbody></table>
+        <div class="pal-row"><span class="btn primary">Apply</span><span class="btn">Export</span><span class="pal-bars" aria-hidden="true"><i></i><i></i><i class="on"></i></span></div>
+        <p class="num pal-low"></p>
+      </div>
+      <div class="pal" data-palette="whiteprint">
+        <h3>Whiteprint</h3>
+        <p class="meta">A diazo print: blue-violet line work on a lilac-cast sheet, the grid reproduced as a broken line.</p>
+        <div class="pal-tabs"><span class="tab is-on">Summary</span><span class="tab">Tasks</span><span class="tab">Cost</span></div>
+        <div class="figline"><span class="fig">64.0</span><span class="unit">working days</span><span class="srcmark">S2</span></div>
+        <table class="tbl pick"><tbody><tr><td><span class="rowbtn">C1 Procure</span></td><td class="r">13.3</td><td><span class="status is-pass"><i aria-hidden="true"></i>Float</span></td></tr><tr class="is-sel"><td><span class="rowbtn">B2 Build</span></td><td class="r">0.0</td><td><span class="status is-caution"><i aria-hidden="true"></i>Critical</span></td></tr></tbody></table>
+        <div class="pal-row"><span class="btn primary">Apply</span><span class="btn">Export</span><span class="pal-bars" aria-hidden="true"><i></i><i></i><i class="on"></i></span></div>
+        <p class="num pal-low"></p>
+      </div>
+      <div class="pal" data-palette="vellum">
+        <h3>Vellum</h3>
+        <p class="meta">Graphite on warm tracing vellum over a dotted underlay, with Prussian blue as the mark.</p>
+        <div class="pal-tabs"><span class="tab is-on">Summary</span><span class="tab">Tasks</span><span class="tab">Cost</span></div>
+        <div class="figline"><span class="fig">64.0</span><span class="unit">working days</span><span class="srcmark">S2</span></div>
+        <table class="tbl pick"><tbody><tr><td><span class="rowbtn">C1 Procure</span></td><td class="r">13.3</td><td><span class="status is-pass"><i aria-hidden="true"></i>Float</span></td></tr><tr class="is-sel"><td><span class="rowbtn">B2 Build</span></td><td class="r">0.0</td><td><span class="status is-caution"><i aria-hidden="true"></i>Critical</span></td></tr></tbody></table>
+        <div class="pal-row"><span class="btn primary">Apply</span><span class="btn">Export</span><span class="pal-bars" aria-hidden="true"><i></i><i></i><i class="on"></i></span></div>
+        <p class="num pal-low"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="s3">
+    <h2 id="s3"><span class="n">3</span>Contrast</h2>
+    <p class="lead" id="pair-sum"></p>
+    <div class="tblwrap"><table class="tbl" id="pairs"><thead><tr><th>Foreground on background</th><th class="s">Sample</th><th class="r">Ratio</th><th class="r">Needs</th><th>Result</th><th>Use</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <section class="sec" aria-labelledby="s4">
+    <h2 id="s4"><span class="n">4</span>Type</h2>
+    <p class="lead">Three Plex faces, each with one job. Plex Sans Condensed is the drawing's title-block voice: the page title, the headline figures and the title block. Plex Sans carries running text, labels and table figures; Plex Mono only machine strings. Six sizes on a 1.25 ladder; 14 px is the floor on a screen and 22 px on a slide.</p>
+    <div class="tblwrap"><table class="tbl type-spec" id="type"><thead><tr><th>Role</th><th>Face</th><th>Token</th><th class="r">Size</th><th>Specimen</th></tr></thead><tbody>
+      <tr data-v="--fs-fig-lg"><td>Headline figure</td><td>Condensed</td><td class="num">--fs-fig-lg</td><td class="r num"></td><td><span class="fig-lg">64.0</span> <span class="unit">working days</span></td></tr>
+      <tr data-v="--fs-fig"><td>Block figure</td><td>Condensed</td><td class="num">--fs-fig</td><td class="r num"></td><td><span class="fig">207.8</span> <span class="unit">USD thousand</span></td></tr>
+      <tr data-v="--fs-h1"><td>Page title</td><td>Condensed</td><td class="num">--fs-h1</td><td class="r num"></td><td><h1>Project A, delivery schedule</h1></td></tr>
+      <tr data-v="--fs-meta"><td>Title block caption</td><td>Condensed</td><td class="num">--fs-meta</td><td class="r num"></td><td><span class="tb-cap">Revision</span></td></tr>
+      <tr data-v="--fs-h2"><td>Block heading</td><td>Sans</td><td class="num">--fs-h2</td><td class="r num"></td><td><h2>People booked per week</h2></td></tr>
+      <tr data-v="--fs-body"><td>Body, values, controls</td><td>Sans</td><td class="num">--fs-body</td><td class="r num"></td><td>Task B2 carries 45 % of the spread in the finish.</td></tr>
+      <tr data-v="--fs-meta"><td>Units, ticks, sources</td><td>Sans</td><td class="num">--fs-meta</td><td class="r num"></td><td><span class="meta">Working days from the start. Committed end 2027-03-29</span></td></tr>
+      <tr data-v="--fs-meta"><td>Machine string</td><td>Mono</td><td class="num">--fs-meta</td><td class="r num"></td><td><span class="mono meta">Day 28.5, B2</span></td></tr>
+    </tbody></table></div>
+  </section>
+
+  <section class="sec" aria-labelledby="s5">
+    <h2 id="s5"><span class="n">5</span>Space, rules and rows</h2>
+    <p class="lead">The Carbon 2x grid: an 8 px unit with a 4 px half step, and no 20 px rung. Rules replace boxes; the weight says what the rule does.</p>
+    <div class="cols">
+      <div class="tblwrap"><table class="tbl" id="space"><thead><tr><th>Token</th><th class="r">Size</th><th>Specimen</th></tr></thead><tbody></tbody></table></div>
+      <div class="tblwrap"><table class="tbl" id="rules"><thead><tr><th>Token</th><th class="r">Size</th><th>Use</th><th>Specimen</th></tr></thead><tbody>
+        <tr data-v="--hair"><td class="num">--hair</td><td class="r num"></td><td>Between rows</td><td><i class="rule-spec" style="height: var(--hair)"></i></td></tr>
+        <tr data-v="--rule-strong"><td class="num">--rule-strong</td><td class="r num"></td><td>Under a head, over a block</td><td><i class="rule-spec" style="height: var(--rule-strong)"></i></td></tr>
+        <tr data-v="--rule-sel"><td class="num">--rule-sel</td><td class="r num"></td><td>The active mark</td><td><i class="rule-spec" style="height: var(--rule-sel); background: var(--mark)"></i></td></tr>
+        <tr data-v="--row"><td class="num">--row</td><td class="r num"></td><td>Table row, control height</td><td class="na">48 px on touch</td></tr>
+        <tr data-v="--tab-h"><td class="num">--tab-h</td><td class="r num"></td><td>Dock tab</td><td class="na">One row taller</td></tr>
+        <tr data-v="--r-ctl"><td class="num">--r-ctl</td><td class="r num"></td><td>Controls only</td><td class="na">Everything else is square</td></tr>
+      </tbody></table></div>
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="s6">
+    <h2 id="s6"><span class="n">6</span>Every component in every state</h2>
+    <p class="lead">Each cell is the real class with a state hook (<span class="mono">.is-hover</span>, <span class="mono">.is-focus</span>, <span class="mono">.is-on</span>, <span class="mono">.is-disabled</span>, <span class="mono">.is-error</span>), so the state shows at rest. A state the component cannot have says so.</p>
+    <div class="tblwrap"><table class="tbl matrix"><thead><tr><th>Component</th><th>Rest</th><th>Hover</th><th>Focus</th><th>Selected</th><th>Disabled</th><th>Error</th></tr></thead><tbody>
+      <tr><td>Button</td><td><span class="btn">Export</span></td><td><span class="btn is-hover">Export</span></td><td><span class="btn is-focus">Export</span></td><td><span class="btn is-on">Export</span></td><td><span class="btn is-disabled">Export</span></td><td class="na">n/a</td></tr>
+      <tr><td>Primary button</td><td><span class="btn primary">Apply</span></td><td><span class="btn primary is-hover">Apply</span></td><td><span class="btn primary is-focus">Apply</span></td><td class="na">n/a</td><td><span class="btn primary is-disabled">Apply</span></td><td class="na">n/a</td></tr>
+      <tr><td>Ghost button</td><td><span class="btn ghost">Reset</span></td><td><span class="btn ghost is-hover">Reset</span></td><td><span class="btn ghost is-focus">Reset</span></td><td><span class="btn ghost is-on">Reset</span></td><td><span class="btn ghost is-disabled">Reset</span></td><td class="na">n/a</td></tr>
+      <tr><td>Danger button</td><td><span class="btn danger">Remove</span></td><td><span class="btn danger is-hover">Remove</span></td><td><span class="btn danger is-focus">Remove</span></td><td class="na">n/a</td><td><span class="btn danger is-disabled">Remove</span></td><td class="na">n/a</td></tr>
+      <tr><td>Input</td><td><span class="input">16.3</span></td><td><span class="input is-hover">16.3</span></td><td><span class="input is-focus">16.3</span></td><td class="na">n/a</td><td><span class="input is-disabled">16.3</span></td><td><span class="input is-error">40</span></td></tr>
+      <tr><td>Select</td><td><span class="select-wrap"><span class="select">Weekly</span></span></td><td><span class="select-wrap"><span class="select is-hover">Weekly</span></span></td><td><span class="select-wrap"><span class="select is-focus">Weekly</span></span></td><td class="na">n/a</td><td><span class="select-wrap"><span class="select is-disabled">Weekly</span></span></td><td><span class="select-wrap"><span class="select is-error">Choose</span></span></td></tr>
+      <tr><td>Segment</td><td><span class="seg"><span>Table</span></span></td><td><span class="seg"><span class="is-hover">Table</span></span></td><td><span class="seg"><span class="is-focus">Table</span></span></td><td><span class="seg"><span class="is-on">Chart</span></span></td><td><span class="seg"><span class="is-disabled">Table</span></span></td><td class="na">n/a</td></tr>
+      <tr><td>Checkbox</td><td><span class="check"><span class="box"></span>Float</span></td><td><span class="check is-hover"><span class="box"></span>Float</span></td><td><span class="check is-focus"><span class="box"></span>Float</span></td><td><span class="check is-on"><span class="box"></span>Float</span></td><td><span class="check is-disabled"><span class="box"></span>Float</span></td><td><span class="check is-error"><span class="box"></span>Float</span></td></tr>
+      <tr><td>Dock tab</td><td><span class="tab">Cost</span></td><td><span class="tab is-hover">Cost</span></td><td><span class="tab is-focus">Cost</span></td><td><span class="tab is-on">Cost</span></td><td><span class="tab is-disabled">Cost</span></td><td><span class="tab is-error">Tasks <span class="flag status is-fault"><i aria-hidden="true"></i><span class="sr-only">has a fault</span></span></span></td></tr>
+      <tr><td>Source mark</td><td><span class="srcmark">S4</span></td><td><span class="srcmark is-hover">S4</span></td><td><span class="srcmark is-focus">S4</span></td><td><span class="srcmark is-on">S4</span></td><td class="na">n/a</td><td><span class="srcmark is-unverified">S4</span> <span class="unverified">unverified</span></td></tr>
+      <tr><td>Table row</td><td colspan="6"><table class="tbl pick"><tbody>
+        <tr><td><span class="rowbtn">A1 Scope</span></td><td class="r">5.3</td><td class="na">rest</td></tr>
+        <tr class="is-hover"><td><span class="rowbtn">A2 Design</span></td><td class="r">10.5</td><td class="na">hover</td></tr>
+        <tr><td><span class="rowbtn is-focus">A2 Design</span></td><td class="r">10.5</td><td class="na">focus</td></tr>
+        <tr class="is-sel"><td><span class="rowbtn">B2 Build, part 2</span></td><td class="r">16.3</td><td class="na">selected</td></tr>
+        <tr class="is-off"><td><span class="rowbtn">D1 Migrate</span></td><td class="r">0.0</td><td class="na">out of scope (the disabled state of a row)</td></tr>
+      </tbody></table></td></tr>
+      <tr><td>Drawing bar</td><td><svg class="bar-spec" viewBox="0 0 112 48" aria-hidden="true"><rect class="d-bar" x="4" y="14" width="104" height="20"/></svg></td><td><svg class="bar-spec" viewBox="0 0 112 48" aria-hidden="true"><rect class="d-bar is-hover" x="4" y="14" width="104" height="20"/></svg></td><td><svg class="bar-spec" viewBox="0 0 112 48" aria-hidden="true"><rect class="d-bar" x="4" y="14" width="104" height="20"/><rect class="d-focus" x="1" y="11" width="110" height="26"/></svg></td><td><svg class="bar-spec" viewBox="0 0 112 48" aria-hidden="true"><rect class="d-bar is-sel" x="4" y="14" width="104" height="20"/></svg></td><td class="na">n/a</td><td class="na">n/a</td></tr>
+      <tr><td>Critical bar</td><td><svg class="bar-spec" viewBox="0 0 112 48" aria-hidden="true"><rect class="d-bar is-crit" x="4" y="14" width="104" height="20"/></svg></td><td><svg class="bar-spec" viewBox="0 0 112 48" aria-hidden="true"><rect class="d-bar is-crit is-hover" x="4" y="14" width="104" height="20"/></svg></td><td><svg class="bar-spec" viewBox="0 0 112 48" aria-hidden="true"><rect class="d-bar is-crit" x="4" y="14" width="104" height="20"/><rect class="d-focus" x="1" y="11" width="110" height="26"/></svg></td><td><svg class="bar-spec" viewBox="0 0 112 48" aria-hidden="true"><rect class="d-bar is-crit is-sel" x="4" y="14" width="104" height="20"/></svg></td><td class="na">n/a</td><td class="na">n/a</td></tr>
+    </tbody></table></div>
+  </section>
+
+  <section class="sec" aria-labelledby="s7">
+    <h2 id="s7"><span class="n">7</span>One family, side by side</h2>
+    <p class="lead" id="fam-sum"></p>
+    <div class="family" id="family">
+      <button type="button" class="btn primary" data-say="Primary pressed">Apply</button>
+      <button type="button" class="btn" data-say="Secondary pressed">Export</button>
+      <button type="button" class="btn ghost" data-say="Ghost pressed">Reset</button>
+      <span class="input-unit" style="width: 9rem"><input class="input" id="f-in" aria-label="Most likely duration" value="16.3" inputmode="decimal"><span class="unit">d</span></span>
+      <span class="select-wrap" style="width: 10rem"><select class="select" aria-label="Group by"><option>Weekly</option><option>Monthly</option></select></span>
+      <span class="seg" role="group" aria-label="View"><button type="button" value="chart" aria-pressed="true">Chart</button><button type="button" value="table" aria-pressed="false">Table</button></span>
+      <label class="check"><input type="checkbox" checked><span class="box"></span>Float</label>
+    </div>
+    <p class="out" id="fam-out" aria-live="polite">Press a control</p>
+  </section>
+
+  <section class="sec" aria-labelledby="s8">
+    <h2 id="s8"><span class="n">8</span>Fields</h2>
+    <p class="lead">A label over its control, then one hint or one error. The unit sits inside the field. An error names the limit and keeps the value the reader typed.</p>
+    <div class="live-form">
+      <div class="field"><label for="likely">Most likely</label><span class="input-unit"><input class="input" id="likely" value="15.0" inputmode="decimal" aria-describedby="likely-h"><span class="unit">d</span></span><span class="hint" id="likely-h">Between the optimistic 12.0 and the pessimistic 26.0 d</span></div>
+      <div class="field"><label for="pess">Pessimistic</label><span class="input-unit"><input class="input" id="pess" value="40" inputmode="decimal" aria-invalid="true" aria-describedby="pess-e"><span class="unit">d</span></span><span class="error" id="pess-e">Above the 30.0 d limit for one task</span></div>
+      <div class="field"><label for="ws">Workstream</label><span class="select-wrap"><select class="select" id="ws"><option>Define</option><option>Build</option><option>Deploy</option></select></span><span class="hint">From the staffing plan</span></div>
+      <div class="field"><span class="label" id="locked-l">Grid</span><span class="input-unit"><input class="input" value="5" disabled aria-labelledby="locked-l"><span class="unit">d</span></span><span class="hint">Fixed at one working week</span></div>
+    </div>
+    <div class="family"><button type="button" class="btn primary" id="check-btn">Check fields</button><button type="button" class="btn danger" data-say="Danger pressed: a real page asks before it removes">Remove task</button><button type="button" class="btn" disabled>Export</button><span class="meta">Export waits for valid estimates</span></div>
+  </section>
+
+  <section class="sec" aria-labelledby="s9">
+    <h2 id="s9"><span class="n">9</span>Status, source and stamp</h2>
+    <p class="lead">A status is a shape and a word; colour is the third cue, never the only one. Every figure names its source; a figure without one carries no mark.</p>
+    <div class="cols">
+      <div>
+        <ul class="checks">
+          <li><span class="status is-pass"><i aria-hidden="true"></i>Pass</span><span class="what">Circle. Pass ink on any ground.</span></li>
+          <li><span class="status is-caution"><i aria-hidden="true"></i>Caution</span><span class="what">Ringed triangle. The fill alone is too light to read, so it is always ringed and worded.</span></li>
+          <li><span class="status is-fault"><i aria-hidden="true"></i>Fault</span><span class="what">Square. Blocks the verdict.</span></li>
+          <li><span class="status is-none"><i aria-hidden="true"></i>Not assessed</span><span class="what">A dash in the quiet ink.</span></li>
+        </ul>
+      </div>
+      <div>
+        <div class="figline"><span class="fig">64.0</span><span class="unit">working days</span><span id="g-src"></span></div>
+        <div class="figline"><span class="fig">42.0</span><span class="unit">USD thousand</span><span id="g-src2"></span></div>
+        <div class="figline"><span class="fig">11</span><span class="unit">tasks</span><span class="nomark meta">counted on the drawing, no source mark</span></div>
+        <p style="margin-top: var(--gap-group)"><span class="sim">Sample data</span> <span class="meta">The stamp on every simulated screen</span></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="s10">
+    <h2 id="s10"><span class="n">10</span>Dock tabs and tables</h2>
+    <p class="lead">A caption number (<span class="mono">Fig. 2</span>, <span class="mono">Table 1</span>) heads every figure and table, the same number on the page and in the deck, so a note or the source register can cite it. Tabs switch panes that are built once. A tab whose pane holds a caution or a fault carries its shape. Arrow keys move between tabs.</p>
+    <div class="mini-dock">
+      <div class="tabs" role="tablist" aria-label="Specimen sections">
+        <button class="tab" role="tab" id="mt-a" aria-controls="mp-a" aria-selected="true">Summary</button>
+        <button class="tab" role="tab" id="mt-b" aria-controls="mp-b">Tasks <span class="flag status is-caution"><i aria-hidden="true"></i><span class="sr-only">has a caution</span></span></button>
+        <button class="tab" role="tab" id="mt-c" aria-controls="mp-c" disabled>Export</button>
+      </div>
+      <div class="pane" role="tabpanel" id="mp-a" aria-labelledby="mt-a"><p>One verdict and one headline figure, then the checks.</p></div>
+      <div class="pane" role="tabpanel" id="mp-b" aria-labelledby="mt-b" hidden><p class="empty">No task is selected. Pick one on the drawing.</p></div>
+      <div class="pane" role="tabpanel" id="mp-c" aria-labelledby="mt-c" hidden></div>
+    </div>
+    <div class="cols">
+      <div><h3 class="cap"><span class="no">Table 1</span>Characteristics</h3><div class="tblwrap"><table class="tbl"><thead><tr><th>Parameter</th><th class="r">Value</th><th>Unit</th><th class="s">Source</th></tr></thead><tbody id="g-chars"></tbody></table></div></div>
+      <div><h3 class="cap"><span class="no">Table 2</span>Tasks</h3><div class="tblwrap"><table class="tbl pick" id="g-pick"><thead><tr><th>Task</th><th class="r">Float, d</th><th>Status</th></tr></thead><tbody></tbody></table></div></div>
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="s11">
+    <h2 id="s11"><span class="n">11</span>Charts and the drawing</h2>
+    <p class="lead">Each chart is drawn at its box's width and redrawn when that changes; nothing scales a picture of text. Hover, focus or tap a column for the readout; arrow keys step, Escape closes. On the drawing, a row is a button: pick it with a click, a tap or Enter.</p>
+    <div class="cols">
+      <div><div class="block-head"><div><h3><span class="no">Fig. 3</span>Columns with a reference</h3><p class="meta">Hours per week</p></div></div><div class="chart" id="g-cols"></div><ul class="key" aria-label="Key"><li><i class="k-col"></i>Logged</li><li><i class="k-line"></i>Planned</li></ul></div>
+      <div><div class="block-head"><div><h3><span class="no">Fig. 2</span>Range against a target</h3><p class="meta">Working days from the start</p></div></div><div class="chart" id="g-range"></div>
+        <div class="block-head" style="margin-top: var(--gap-block)"><div><h3><span class="no">Fig. 4</span>Ranked bars, one scale</h3><p class="meta">Share of the cost in %, never stacked</p></div></div><div class="chart" id="g-rank"></div></div>
+    </div>
+    <div class="drawing mini-drawing" id="g-dwg"></div>
+    <div class="canvas-foot" role="group" aria-label="Title block">
+      <div class="tb-cell tb-key"><span class="tb-cap">Key</span><ul class="key" aria-label="Drawing key"><li><i class="k-bar"></i>Task</li><li><i class="k-crit"></i>Critical task</li><li><i class="k-sel"></i>Selected task</li><li><i class="k-float"></i>Float</li><li><i class="k-link"></i>Link</li><li><i class="k-target"></i>Target</li><li><i class="k-band"></i>Forecast ± spread</li></ul></div>
+      <div class="tb-cell"><span class="tb-cap">Position</span><span class="tb-val coords" id="g-pos">Point at the drawing</span></div>
+      <div class="tb-cell"><span class="tb-cap">Grid</span><span class="tb-val">5 d</span></div>
+      <div class="tb-cell"><span class="tb-cap">Revision</span><span class="tb-val">2</span></div>
+      <div class="tb-cell"><span class="tb-cap">Date</span><span class="tb-val">2026-11-02</span></div>
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="s12">
+    <h2 id="s12"><span class="n">12</span>Do and don't</h2>
+    <div class="dd">
+      <div><h3>Do</h3><ul>
+        <li>Put the unit beside every figure and the source mark on the same line.</li>
+        <li>Separate with rules and space. The page is a sheet, not a stack of boxes.</li>
+        <li>Give each view one primary chart and one headline figure.</li>
+        <li>Say a status with a shape and a word.</li>
+        <li>Draw comparisons in grey and the measured series in the mark.</li>
+      </ul></div>
+      <div><h3>Don't</h3><ul>
+        <li>Wrap a block in a bordered, tinted or shadowed card.</li>
+        <li>Stack shares that do not add up, or average two sources into one.</li>
+        <li>Mute text with opacity. Use the measured inks.</li>
+        <li>Use the mark for decoration. It means active, nothing else.</li>
+        <li>Set any text below 14 px on a screen or 22 px on a slide.</li>
+      </ul></div>
+    </div>
+  </section>
+</main>
+
+<script src="mockup/kit.js"></script>
+<script>
+(function () {
+  'use strict';
+  const S = window.SHEET, f = S.fmt, $ = (id) => document.getElementById(id);
+
+  // ---------- 1, 2 and 3: colour, palettes and contrast, measured from the CSS as loaded ----------
+  const SW = [
+    ['--sheet', 'Ground of every page and slide, the drawing inside its frame'], ['--sheet-2', 'Canvas around the drawing, hovered row, tab strip'], ['--ink', 'Text, figures, the drawing frame'],
+    ['--ink-2', 'Secondary text, the outline of a bar with float'], ['--ink-3', 'Units, ticks, source lines, links and float lines'], ['--rule', 'Hairline between rows'], ['--edge', 'Every control edge'], ['--grid', 'Grid on the drawing'],
+    ['--mark', 'Selection, focus, primary action, the series being read'], ['--mark-2', 'Critical bars, second rank'], ['--tint', 'Ground of a selected row, in a table or on the drawing'],
+    ['--cmp', 'Comparison line, the target'], ['--cmp-fill', 'Comparison bars, the hatch of a spread'], ['--track', 'Axis of a range'], ['--band', 'An estimate plus or minus its tolerance'],
+    ['--pass', 'Pass mark'], ['--pass-ink', 'Pass word'], ['--pass-tint', 'Pass ground'], ['--caution', 'Caution fill, always ringed'], ['--caution-ink', 'Caution word'],
+    ['--caution-tint', 'Caution ground'], ['--fault', 'Fault mark, danger button'], ['--fault-ink', 'Fault word, field error'], ['--fault-tint', 'Fault ground']
+  ];
+  // the same list DESIGN.md's contrast table was generated from
+  const PAIRS = [
+    ['ink', 'sheet', 4.5, 'body text, figures, row labels on the drawing'], ['ink', 'sheet-2', 4.5, 'text on the canvas and a hovered row'], ['ink', 'tint', 4.5, 'text in a selected row'],
+    ['ink-2', 'sheet', 4.5, 'secondary text'], ['ink-2', 'sheet-2', 4.5, 'secondary text and dimension text on the canvas'], ['ink-3', 'sheet', 4.5, 'units, ticks, source lines'],
+    ['ink-3', 'sheet-2', 4.5, 'axis labels on the canvas, tab strip'], ['ink-3', 'tint', 4.5, 'units in a selected row'], ['ink-3', 'caution-tint', 4.5, 'units in a caution row'],
+    ['ink-3', 'fault-tint', 4.5, 'units in a fault row'], ['mark', 'sheet', 4.5, 'selected tab label, link, source mark on hover'], ['mark', 'sheet-2', 4.5, 'selected label on the tab strip'],
+    ['mark', 'tint', 4.5, 'selected row label, in a table or on the drawing'], ['sheet', 'mark', 4.5, 'primary button label'], ['sheet', 'fault', 4.5, 'danger button label'],
+    ['pass-ink', 'sheet', 4.5, 'status word pass'], ['pass-ink', 'pass-tint', 4.5, 'pass word on its tint'], ['caution-ink', 'sheet', 4.5, 'status word caution'],
+    ['caution-ink', 'caution-tint', 4.5, 'caution word on its tint'], ['caution-ink', 'sheet-2', 4.5, 'caution word on the canvas'], ['fault-ink', 'sheet', 4.5, 'status word fault, error text'],
+    ['fault-ink', 'fault-tint', 4.5, 'fault word on its tint'], ['fault-ink', 'sheet-2', 4.5, 'fault word on the canvas'], ['ink', 'caution-tint', 4.5, 'text in a caution row'],
+    ['ink', 'fault-tint', 4.5, 'text in a fault row'], ['edge', 'sheet', 3, 'control boundary'], ['edge', 'sheet-2', 3, 'control boundary on the canvas'],
+    ['mark', 'sheet', 3, 'focus ring, measured series'], ['mark', 'tint', 3, 'selected bar on its selected row'], ['mark-2', 'sheet', 3, 'critical bar'],
+    ['ink-2', 'sheet', 3, 'outline of a bar with float'], ['ink-3', 'sheet', 3, 'links, float lines, dimension lines'], ['ink', 'sheet-2', 3, 'drawing frame against the canvas'],
+    ['cmp', 'sheet', 3, 'comparison line, target line'], ['pass', 'sheet', 3, 'pass mark'], ['fault', 'sheet', 3, 'fault mark'],
+    ['ink', 'band', 3, 'value mark over the tolerance band'], ['ink', 'track', 3, 'value mark on the range track'],
+    ['mark', 'mark-2', 1, 'selected bar against a critical one (told apart by position and label, not contrast)'],
+    ['cmp', 'band', 1, 'target tick over the tolerance band (told apart by its dash and label)'],
+    ['grid', 'sheet', 1.3, 'grid on the drawing (a visibility floor, not a WCAG pair)'],
+    ['rule', 'ink', 4.5, 'deck control bar label'], ['sheet', 'ink', 4.5, 'deck counter, notes and contents text'], ['edge', 'ink', 3, 'disabled deck control, notes rule']
+  ];
+  const rgb = (hex) => { const h = hex.replace('#', ''); return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16) / 255); };
+  const lum = (hex) => { const c = rgb(hex).map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4))); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
+  const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+  let scope = document.documentElement;
+  const val = (t, el = scope) => getComputedStyle(el).getPropertyValue(t).trim().toUpperCase();
+  function measure() {
+  $('swatches').tBodies[0].innerHTML = SW.map(([t, role]) => `<tr><td class="s"><i class="sw" style="background: var(${t})"></i></td><td class="num">${t}</td><td class="num">${val(t)}</td><td class="r num">${f.num(ratio(val(t), val('--sheet')), 1)}</td><td>${role}</td></tr>`).join('');
+  let low = Infinity, fails = 0;
+  $('pairs').tBodies[0].innerHTML = PAIRS.map(([fg, bg, need, use]) => {
+    // a pair with no floor (need 1) is recorded for its ratio and judged by position, so it gets no pass
+    const r = ratio(val('--' + fg), val('--' + bg)), ok = r >= need, judged = need > 1;
+    if (!ok) fails++;
+    if (need === 4.5) low = Math.min(low, r);
+    return `<tr><td class="num">--${fg} on --${bg}</td><td class="s"><span class="pair-sample" style="color:var(--${fg});background:var(--${bg})">${need === 4.5 ? 'Aa 42' : '<i aria-hidden="true"></i>'}</span></td><td class="r num">${f.num(r, 2)}</td><td class="r num">${judged ? f.num(need, 1) : 'none'}</td><td>${!judged ? S.status('none', 'No floor') : ok ? S.status('pass', 'Pass') : S.status('fault', 'Fail')}</td><td>${use}</td></tr>`;
+  }).join('');
+  $('pair-sum').textContent = `${PAIRS.length} pairs measured with the WCAG 2 formula in this browser, ${fails ? fails + ' failing' : 'none failing'}. The lowest text pair is ${f.num(low, 2)}:1. Text needs 4.5:1, marks and control edges 3:1.`;
+  }
+  // each specimen's own lowest text pair, read from its own data-palette scope
+  function measureSpecimens() {
+    document.querySelectorAll('.pal').forEach((el) => {
+      let lo = Infinity, bad = 0;
+      PAIRS.forEach(([fg, bg, need]) => { const r = ratio(val('--' + fg, el), val('--' + bg, el)); if (r < need) bad++; if (need === 4.5) lo = Math.min(lo, r); });
+      el.querySelector('.pal-low').textContent = `${PAIRS.length - bad} of ${PAIRS.length} pairs pass; lowest text pair ${f.num(lo, 2)}:1`;
+    });
+  }
+  measure();
+  measureSpecimens();
+  S.seg($('palette'), (v) => { document.documentElement.dataset.palette = v; measure(); });
+
+  // ---------- 4 and 5: sizes read back from the tokens ----------
+  const px = (t) => { const p = document.createElement('i'); p.style.cssText = `position:absolute;visibility:hidden;width:var(${t})`; document.body.appendChild(p); const w = p.getBoundingClientRect().width; p.remove(); return w; };
+  document.querySelectorAll('#type tr[data-v], #rules tr[data-v]').forEach((tr) => { tr.querySelector('td.r').textContent = `${f.num(px(tr.dataset.v), 0)} px`; });
+  $('space').tBodies[0].innerHTML = ['--s-1', '--s-2', '--s-3', '--s-4', '--s-6', '--s-8', '--s-10', '--s-12', '--s-16'].map((t) => `<tr><td class="num">${t}</td><td class="r num">${f.num(px(t), 0)} px</td><td><i class="space-bar" style="width: var(${t})"></i></td></tr>`).join('');
+
+  // ---------- 7 and 8: the live family ----------
+  const say = (s) => { $('fam-out').textContent = s; };
+  document.querySelectorAll('[data-say]').forEach((b) => b.addEventListener('click', () => say(b.dataset.say)));
+  S.seg(document.querySelector('#family .seg'), (v) => say(`View: ${v}`));
+  document.querySelector('#family select').addEventListener('change', (e) => say(`Group by: ${e.target.value}`));
+  document.querySelector('#family .check input').addEventListener('change', (e) => say(`Float ${e.target.checked ? 'shown' : 'hidden'}`));
+  const hs = [...$('family').children].map((c) => Math.round((c.matches('.check') ? c : c.querySelector('.input, .select') || c).getBoundingClientRect().height));
+  $('fam-sum').textContent = `Buttons, an input with its unit, a select, a segment and a checkbox row share one height, one edge, one radius and one focus ring. Measured here: ${[...new Set(hs)].map((h) => h + ' px').join(', ')}.`;
+  $('check-btn').addEventListener('click', () => {
+    const v = parseFloat($('pess').value), ok = v >= 0 && v <= 30;
+    $('pess').setAttribute('aria-invalid', String(!ok));
+    $('pess-e').textContent = ok ? 'Within the 30.0 d limit for one task' : 'Above the 30.0 d limit for one task';
+    $('pess-e').className = ok ? 'hint' : 'error';
+    say(ok ? 'Fields checked: all within limits' : 'Fields checked: pessimistic estimate above its limit');
+  });
+
+  // ---------- 9 and 10: sources, tabs, tables ----------
+  const REG = {
+    S2: { title: 'Three-point estimates', source: 'Sample estimating session', method: 'Optimistic, most likely and pessimistic durations per task', formula: 'expected = (o + 4m + p) / 6', date: '2026-12-10' },
+    S5: { title: 'Vendor quote', source: 'Sample supplier quote', method: 'A fixed price for one bought item', date: '2026-12-02', verified: false, gap: 'a draft, not yet signed' }
+  };
+  S.sources(REG);
+  $('g-src').innerHTML = S.srcmark('S2', REG);
+  $('g-src2').innerHTML = S.srcmark('S5', REG);
+  S.tabs(document.querySelector('.mini-dock [role=tablist]'));
+  $('g-chars').innerHTML = [['Forecast duration', '64.0', 'working days'], ['Spread, one σ', '3.5', 'working days'], ['Critical tasks', '7 of 11', 'count']].map((r) => `<tr><td>${r[0]}</td><td class="r">${r[1]}</td><td class="u">${r[2]}</td><td class="s">${S.srcmark('S2', REG)}</td></tr>`).join('');
+  let pick = 'T3';
+  const tasks = [['T1', 'Gather', 0, 'caution', 'Critical'], ['T2', 'Draft', 0, 'caution', 'Critical'], ['T3', 'Check', 5, 'pass', 'Float'], ['T4', 'Revise', 0, 'caution', 'Critical'], ['T5', 'Publish', 0, 'caution', 'Critical']];
+  const drawPick = () => { $('g-pick').tBodies[0].innerHTML = tasks.map(([id, name, fl, st, word]) => `<tr class="${id === pick ? 'is-sel' : ''}"><td><button type="button" class="rowbtn" data-z="${id}" aria-pressed="${id === pick}">${id} ${name}</button></td><td class="r">${f.num(fl, 1)}</td><td>${S.status(st, word)}</td></tr>`).join(''); };
+  drawPick();
+  $('g-pick').addEventListener('click', (e) => { const b = e.target.closest('[data-z]'); if (b) { pick = b.dataset.z; drawPick(); } });
+
+  // ---------- 11: charts and the drawing ----------
+  const W = Array.from({ length: 12 }, (_, i) => `W${i + 1}`);
+  const L = [118, 142, 150, 161, 170, 158, 149, 166, 172, 160, 151, 140], PL = [120, 140, 160, 160, 160, 160, 160, 160, 160, 160, 150, 140];
+  S.mount($('g-cols'), (w) => S.columns({ width: w, height: 260, rows: W.map((m, i) => ({ label: m, v: L[i] })), ref: PL, refLabel: 'Planned', extreme: 'max',
+    aria: 'Sample hours logged per week against plan: ' + W.map((m, i) => `${m} ${f.int(L[i])}`).join(', ') }),
+  { readout: (i) => `<b>${W[i]}</b><span class="where">${f.int(L[i])} hours logged</span><span class="where">${f.int(PL[i])} planned, ${f.signed(L[i] - PL[i], 0)} hours</span><span class="from">Sample data</span>` });
+  S.mount($('g-range'), (w) => S.range({ width: w, min: 55, max: 75, value: 64, tol: 3.5, target: 61, targetLabel: 'Target', unit: 'd', aria: 'Forecast 64.0 plus or minus 3.5 working days against a target of 61.0' }));
+  S.mount($('g-rank'), (w) => S.ranked({ width: w, rows: [{ label: 'Build', v: 51 }, { label: 'Deploy', v: 34 }, { label: 'Define', v: 15 }], unit: '%', fmt: (v) => f.num(v, 0), aria: 'Share of the cost: build 51, deploy 34, define 15 percent' }));
+  // a five-task specimen: T1, T2, T4 and T5 are the critical chain; T3 has five days of float
+  const dwg = {
+    grid: 5, unit: 'd',
+    rows: [{ id: 'T1', label: 'Gather', group: 'A', start: 0, end: 6, float: 0, critical: true }, { id: 'T2', label: 'Draft', group: 'A', start: 6, end: 14, float: 0, critical: true },
+      { id: 'T3', label: 'Check', group: 'A', start: 6, end: 9, float: 5, critical: false }, { id: 'T4', label: 'Revise', group: 'B', start: 14, end: 19, float: 0, critical: true },
+      { id: 'T5', label: 'Publish', group: 'B', start: 19, end: 21, float: 0, critical: true }],
+    links: [['T1', 'T2', true], ['T1', 'T3', false], ['T2', 'T4', true], ['T3', 'T4', false], ['T4', 'T5', true]],
+    marks: [{ at: 20, label: 'Target', kind: 'target' }, { at: 21, label: 'Forecast', kind: 'forecast' }], band: [19.5, 22.5],
+    dims: [[0, 21, '21.0 d'], [20, 21, '1.0 d late']]
+  };
+  const tl = S.timeline($('g-dwg'), dwg, { sel: pick, aria: 'Specimen drawing of five tasks', label: (r) => `${r.id} ${r.label}, ${f.num(r.end - r.start, 1)} working days`,
+    onSelect: (id) => { pick = id; drawPick(); },
+    onPointer: (q) => { $('g-pos').textContent = q ? `Day ${f.num(q.t, 1)}${q.row ? `, row ${q.row}` : ''}` : 'Point at the drawing'; } });
+  $('g-pick').addEventListener('click', () => tl.select(pick));
+})();
+</script>
+</body>
+</html>
