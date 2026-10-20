@@ -82,7 +82,7 @@ both ink); the sign `+` or `-` carries the direction. Categories are told apart 
 | Component | Class | Function |
 |---|---|---|
 | Page | `html.news`, `.page` | |
-| Masthead | `.mast` > `a.brand` (`b` + `span`), `.meta` with `.simulasi` | the brand links home on the site; `.simulasi` is the sample-data stamp |
+| Masthead | `.mast` > `a.brand` (`b` + `span`), `.meta` with `.sim` | the brand links home on the site; `.sim` is the sample-data stamp |
 | Section row | `nav.sections` > `a` (`aria-current`), `a.later` | |
 | Title | `.title h1` | |
 | Filters | `form.controls` > `fieldset` > `legend` + `span.res` (resolved value, such as a date), `.opts`, `.guard` | `KIT.keepOne(form, name, guard, msg)` |
