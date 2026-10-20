@@ -14,6 +14,7 @@ The name is what you tell your agent; click a preview for full size.
 | Template | World | Dashboard | Deck |
 |---|---|---|---|
 | [`newspaper`](templates/newspaper/) | Financial-newspaper data page run by a calm control room: paper, ink, rules instead of boxes, colour only for abnormal states. Fits revenue and operations dashboards, POS screens, consulting-style decks. | [<img src="templates/newspaper/preview/dashboard.png" width="320" alt="Newspaper template: dashboard">](templates/newspaper/preview/dashboard.png) | [<img src="templates/newspaper/preview/deck.png" width="320" alt="Newspaper template: deck">](templates/newspaper/preview/deck.png) |
+| [`datasheet`](templates/datasheet/) | Engineering datasheet beside a drawing: white sheet, hairlines instead of boxes, numbered figures, every value with its unit, tolerance and source. Fits planning and scheduling tools, operations and review dashboards, technical specifications, review decks. | [<img src="templates/datasheet/preview/dashboard.png" width="320" alt="Datasheet template: dashboard">](templates/datasheet/preview/dashboard.png) | [<img src="templates/datasheet/preview/deck.png" width="320" alt="Datasheet template: deck">](templates/datasheet/preview/deck.png) |
 
 ## How it works
 
