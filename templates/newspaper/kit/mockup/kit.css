@@ -1,0 +1,390 @@
+/* kit.css: the newspaper-world page kit, a market-data page in a calm control room (../../DESIGN.md).
+   Colours come from ../tokens.css only; this file names roles, never a hex. Behaviour lives in kit.js.
+   How a page adopts it: mockup/README.md, "Kit". */
+@import url('../tokens.css');
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400..800&family=Source+Serif+4:opsz,wght@8..60,400..700&display=swap');
+
+
+/* ---------- Base and browser surfaces ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { font-size: 16px; -webkit-text-size-adjust: 100%; color-scheme: light; }
+@media (min-width: 1800px) { html.news { font-size: 17px; } }
+@media (min-width: 1921px) { html.scale { font-size: min(0.78vw, 22px); } }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 var(--fs-body)/var(--lh-body) var(--sans);
+  font-variant-numeric: lining-nums tabular-nums; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+h1, h2, h3, p { margin: 0; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; letter-spacing: -0.005em; text-wrap: balance; }
+h1 { font-size: var(--fs-h1); line-height: 1.1; letter-spacing: -0.01em; font-variation-settings: 'opsz' 60; }
+h2 { font-size: var(--fs-h2); line-height: var(--lh-head); font-variation-settings: 'opsz' 32; }
+h3 { font-size: var(--fs-lead); line-height: var(--lh-head); }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: var(--ink); text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+a:hover { text-decoration-thickness: 2px; }
+table { border-collapse: collapse; }
+::selection { background: var(--ink); color: var(--paper); }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+* { scrollbar-color: var(--ink-3) transparent; scrollbar-width: thin; }
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+legend { padding: 0; }
+
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.num { font-variant-numeric: tabular-nums lining-nums; }
+.muted { color: var(--ink-2); }
+.small { color: var(--ink-2); }
+.problem { color: var(--alarm); font-weight: 600; }
+.page { padding: 0 var(--s-8) var(--s-10); }
+
+/* ---------- Masthead: a newspaper flag over a 3 px rule, then the section line ---------- */
+.mast { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s-8); padding: 1.125rem 0 0.625rem; border-bottom: var(--rule-head) solid var(--ink); }
+.brand { margin: 0; display: flex; align-items: baseline; gap: var(--s-3); color: inherit; text-decoration: none; }
+.brand b { font: 700 var(--fs-flag)/1 var(--serif); letter-spacing: 0.01em; font-variation-settings: 'opsz' 60; }
+.brand span, .brand i { color: var(--ink-2); font-weight: 500; font-style: normal; }
+a.brand[href]:hover b { text-decoration: underline 2px; text-underline-offset: 0.15em; }
+.meta { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: flex-end; gap: 0 1.75rem; color: var(--ink-2); }
+.meta b { color: var(--ink); font-weight: 600; }
+.sections { display: flex; flex-wrap: wrap; gap: 0 var(--s-6); border-bottom: var(--hair) solid var(--rule); }
+.sections a { padding: 0.4375rem 0 0.375rem; color: var(--ink-2); text-decoration: none; white-space: nowrap; border-bottom: var(--rule-head) solid transparent; }
+.sections .later { margin-left: var(--s-2); padding-left: var(--s-6); border-left: var(--hair) solid var(--rule); }
+
+/* ---------- Text tabs: one family for every choose-one-of-a-few control ----------
+   At rest a hairline under the word says "clickable"; hover darkens it, the choice takes the 3 px ink rule. */
+.pick, .sections a, .switch button { position: relative; display: inline-block; padding: 0.3125rem 0 0.375rem; background: none; border: 0;
+  border-bottom: var(--rule-head) solid transparent; color: var(--ink-2); font-weight: 400; white-space: nowrap; cursor: pointer;
+  text-decoration: underline 1px var(--cmp-fill); text-underline-offset: 0.3em; transition: color var(--d-fast) var(--ease), border-color var(--d-fast) var(--ease); }
+.pick:hover, .sections a:hover, .switch button:hover { color: var(--ink); border-bottom-color: var(--cmp); text-decoration-color: transparent; }
+.pick:has(input:checked), .sections a[aria-current], .switch button[aria-pressed="true"] { color: var(--ink); font-weight: 600; border-bottom-color: var(--ink); text-decoration: none; cursor: default; }
+.pick input[type=radio] { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+.pick:has(input:focus-visible) { outline: 2px solid var(--ink); outline-offset: 2px; }
+.pick:has(input:disabled) { color: var(--ink-3); cursor: not-allowed; border-bottom-color: transparent; text-decoration: line-through 1px; }
+.pick:has(input:disabled) input { cursor: not-allowed; }
+.switch { display: flex; gap: var(--s-5); flex: none; }
+
+/* Tick: a real checkbox drawn as a square ink box, for a filter that keeps any subset */
+.tick { display: inline-flex; align-items: center; gap: var(--s-2); padding: 0.3125rem 0 0.375rem; color: var(--ink); white-space: nowrap; cursor: pointer; }
+.tick input { appearance: none; -webkit-appearance: none; display: grid; place-content: center; width: 1.125rem; height: 1.125rem; margin: 0;
+  border: 2px solid var(--ink); background: transparent; cursor: pointer; }
+.tick input::after { content: ''; width: 0.3rem; height: 0.6rem; border: solid var(--paper); border-width: 0 2.5px 2.5px 0; transform: translateY(-1px) rotate(45deg); visibility: hidden; }
+.tick input:checked { background: var(--ink); }
+.tick input:checked::after { visibility: visible; }
+.tick:hover input:not(:checked) { background: var(--paper-2); }
+.tick:hover { text-decoration: underline 1px var(--cmp); text-underline-offset: 0.25em; }
+
+/* ---------- Control row: labelled groups of text tabs between two hairlines ----------
+   The legend carries the resolved value (.res: the dates a choice stands for), so no sentence restates the controls. */
+.controls { position: relative; display: flex; flex-wrap: wrap; gap: var(--s-1) 2.75rem; margin: 0; padding-top: var(--s-2); border-top: var(--hair) solid var(--rule); border-bottom: var(--hair) solid var(--rule); }
+.controls legend { color: var(--ink-3); white-space: nowrap; }
+.controls legend .res { margin-left: var(--s-2); color: var(--ink-2); }
+.opts { display: flex; align-items: center; gap: 1.375rem; }
+/* 1920: all groups on one line, so the first screen keeps its height for the figures and the chart */
+@media (min-width: 1800px) { .controls { column-gap: 1.75rem; } .opts { gap: 1rem; } }
+.guard { color: var(--ink-2); white-space: nowrap; }
+/* Date field: the one control that looks like a field, so it reads as "type or pick a date here"; a chosen day or range takes the ink rule */
+.datef { display: inline-flex; align-items: center; gap: var(--s-2); min-height: 2.25rem; padding: 0 var(--s-3); background: var(--field); border: var(--hair) solid var(--cmp);
+  border-radius: var(--r-ctl); color: var(--ink-2); white-space: nowrap; cursor: pointer; transition: border-color var(--d-fast) var(--ease); }
+.datef svg { width: 1rem; height: 1rem; flex: none; fill: none; stroke: currentColor; stroke-width: 1.5; }
+.datef:hover { border-color: var(--ink-3); color: var(--ink); }
+.datef.on { border-color: var(--ink); border-bottom-width: var(--rule-head); color: var(--ink); font-weight: 600; }
+.datef:focus-visible, .pick:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+/* a text tab that opens a popover carries a chevron; pressed, it takes the ink rule like a chosen tab */
+.pick[aria-haspopup]::after { content: ''; display: inline-block; width: 0.375rem; height: 0.375rem; margin: 0 0.125rem 0.25rem var(--s-2); border: solid currentColor; border-width: 0 1.5px 1.5px 0; transform: rotate(45deg); }
+.pick[aria-pressed="true"] { color: var(--ink); font-weight: 600; border-bottom-color: var(--ink); text-decoration: none; }
+.pick:disabled { color: var(--ink-3); cursor: not-allowed; border-bottom-color: transparent; text-decoration: line-through 1px; }
+.pick[hidden], .controls label[hidden] { display: none; }
+/* Calendar popover: an ink edge with the 3 px head rule, typed fields over two months split by a hairline; no shadow */
+.cal.pop { position: absolute; z-index: 30; display: flex; flex-direction: column; gap: var(--s-2); padding: var(--s-3) var(--s-4); border-top: var(--rule-head) solid var(--ink); }
+.cal[hidden] { display: none; }
+.cal-fields { display: flex; gap: var(--s-6); }
+.cal-fields label { display: flex; flex-direction: column; gap: var(--s-1); color: var(--ink-3); }
+.cal-fields .input { width: 9.5rem; color: var(--ink); }
+.cal-fields .input[aria-invalid="true"] { border-color: var(--alarm); box-shadow: 0 0 0 1px var(--alarm); }
+.cal-fields .input[readonly] { background: transparent; border-color: var(--rule); color: var(--ink-2); }
+/* the header between the arrows names the months and the year */
+.cal calendar-range::part(heading), .cal calendar-date::part(heading) { display: block; color: var(--ink-2); font-weight: 600; }
+.cal calendar-month + calendar-month { padding-left: var(--s-6); border-left: var(--hair) solid var(--rule); }
+.cal-msg { min-height: 1.5rem; margin: 0; color: var(--ink-2); }
+.cal-msg.problem { color: var(--alarm); font-weight: 600; }
+.cal-foot { display: flex; align-items: center; gap: var(--s-3); padding-top: var(--s-3); border-top: var(--hair) solid var(--rule); }
+.cal-foot > span { flex: 1; color: var(--ink-2); }
+
+/* ---------- Page title ---------- */
+.title { padding: var(--s-4) 0 var(--s-3); }
+
+/* ---------- Metric tabs: the headline figures are the chart's tabs ----------
+   The chosen tab's figure leads; the others sit smaller and lighter on the same bottom line. */
+.metric { --fig: var(--fs-fig); --fig-off: var(--fs-fig-sm); }
+@media (max-width: 1500px) { .metric { --fig: 2.625rem; --fig-off: 2.125rem; } }
+.metrics { display: grid; grid-template-columns: 1.15fr 1fr 1fr; gap: 0 var(--s-8); }
+.metric { display: block; padding: var(--s-3) var(--s-2) var(--s-3) 0; text-align: left; background: none; border: 0; border-top: var(--hair) solid var(--ink-3); cursor: pointer;
+  transition: background-color var(--d-fast) var(--ease); }
+.metric:hover { background: var(--paper-2); border-top: var(--rule-head) solid var(--ink-3); padding-top: calc(var(--s-3) - var(--rule-head) + var(--hair)); }
+.metric[aria-selected="true"] { background: none; border-top: var(--rule-sel) solid var(--ink); padding-top: calc(var(--s-3) - var(--rule-sel) + var(--hair)); cursor: default; }
+.metric .lbl { display: block; font-weight: 500; color: var(--ink-2); text-decoration: underline 1px var(--rule); text-underline-offset: 0.25em; }
+.metric:hover .lbl { color: var(--ink); text-decoration-color: var(--cmp); }
+.metric[aria-selected="true"] .lbl { color: var(--ink); font-weight: 700; text-decoration: none; }
+.metric .val { display: block; margin: var(--s-1) 0; font: 600 var(--fig)/var(--lh-fig) var(--serif); letter-spacing: -0.015em; font-variation-settings: 'opsz' 60;
+  font-variant-numeric: lining-nums proportional-nums; white-space: nowrap; }
+.metric .chg { display: block; color: var(--ink-2); font-weight: 400; white-space: nowrap; }
+.metric[aria-selected="false"] .val { padding-top: calc((var(--fig) - var(--fig-off)) * var(--lh-fig)); font-size: var(--fig-off); font-weight: 500; color: var(--ink-2); }
+
+/* ---------- Block head: serif heading, a one-line subtitle or legend, controls on the right ---------- */
+.head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: var(--s-1) var(--s-8); margin-bottom: var(--gap-head); }
+.sub { display: block; margin-top: var(--gap-sub); color: var(--ink-2); font-size: var(--fs-body); font-weight: 400; line-height: var(--lh-row); }
+.ruled { border-top: var(--rule-head) solid var(--ink); padding-top: var(--s-2); }
+/* series keys: actual ink, comparison grey, running hatched; .ln draws the key as the line itself */
+.legend { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-1) var(--s-5); color: var(--ink-2); }
+.legend > span { white-space: nowrap; }
+.legend[hidden] { display: none; }
+.key { display: inline-block; width: 0.875rem; height: 0.875rem; margin-right: var(--s-2); vertical-align: -0.0625rem; background: var(--ink); }
+.key.k-cur, .key.k-act { background: var(--ink); }
+.key.k-cmp, .key.k-later { background: var(--cmp-fill); }
+.key.k-cmp.rest { background: var(--rule); }
+.key.k-cmp.out { background: transparent; border: var(--hair) solid var(--cmp); }
+.key.k-run { background: repeating-linear-gradient(45deg, var(--ink) 0 2px, var(--paper) 2px 5px); box-shadow: inset 0 0 0 1.5px var(--ink); }
+.key.ln { width: 1.25rem; height: 0; background: none; border: 0; border-top: 3px solid var(--ink); vertical-align: 0.3em; }
+.key.ln.k-cmp { border-top: 2px solid var(--cmp); }
+.key.ln.out { border-top-style: dashed; }
+
+/* ---------- SVG chart (KIT.plot): text at body size, ink for the actual, a paper halo on annotations ---------- */
+.plot { position: relative; outline-offset: 4px; cursor: crosshair; }
+.plot svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.plot text { font-family: var(--sans); font-size: var(--fs-body); fill: var(--ink-3); }
+.plot text.end { fill: var(--ink); }
+.plot text.end.c { fill: var(--ink-2); }
+.plot text.now { fill: var(--ink); font-weight: 600; }
+.plot text.ann { fill: var(--ink-2); paint-order: stroke; stroke: var(--paper); stroke-width: 5px; stroke-linejoin: round; }
+.plot text.ann.alarm { fill: var(--alarm); font-weight: 600; }
+.readout { position: absolute; top: 0; left: 0; z-index: 5; min-width: 15rem; padding: 0.5rem 0.75rem 0.5625rem; background: var(--paper); border: var(--hair) solid var(--ink);
+  font-size: var(--fs-body); line-height: var(--lh-row); white-space: nowrap; pointer-events: none; }
+.readout b { display: block; margin-bottom: var(--s-1); font-weight: 700; }
+.readout div { display: flex; justify-content: space-between; gap: var(--s-6); }
+.readout div span:first-child { color: var(--ink-2); }
+.readout div.tot { margin-top: var(--s-1); padding-top: var(--s-1); border-top: var(--hair) solid var(--rule); font-weight: 600; }
+.src { margin-top: 0.625rem; color: var(--ink-3); }
+
+/* ---------- Tables: market-data grammar, ruled rows, no boxes ---------- */
+.table { width: 100%; font-size: var(--fs-body); }
+.table th { padding: var(--s-1) var(--s-3) 0.375rem; line-height: var(--lh-row); border-bottom: var(--hair) solid var(--ink); color: var(--ink-2); font-weight: 600; text-align: left; white-space: nowrap; vertical-align: bottom; }
+.table td { height: var(--row-h); padding: var(--s-1) var(--s-3); border-bottom: var(--hair) solid var(--rule); line-height: var(--lh-row); vertical-align: middle; }
+.table th:first-child, .table td:first-child { padding-left: 0; }
+.table th:last-child, .table td:last-child { padding-right: 0; }
+.table .r { text-align: right; }
+.table .nw { white-space: nowrap; }
+.table tr.total td { border-top: 2px solid var(--ink); border-bottom: 0; font-weight: 600; }
+/* sortable header (WAI-ARIA sortable table): the label is a button; underlined while it can take the sort, arrowed once it has it */
+.table th .sort { padding: 0; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; text-decoration: underline 1px var(--rule); text-underline-offset: 0.25em; }
+.table th .sort:hover { color: var(--ink); text-decoration-color: var(--cmp); }
+.table th .sort:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.table th[aria-sort] .sort { color: var(--ink); text-decoration: none; }
+.table th .sort span:not(:empty) { margin-left: var(--s-1); }
+/* a row that opens its detail: the chevron is its button (labelled by the page); hover or focus marks the whole row */
+.table tr[data-tx] { cursor: pointer; }
+.table tr[data-tx]:hover td, .table tr[data-tx]:focus-within td { background: var(--paper-2); }
+.table tr[data-tx]:has(button.go:focus-visible) { outline: 2px solid var(--ink); outline-offset: -2px; }
+.table td.go { width: 1.75rem; padding-left: 0; text-align: right; }
+.table button.go { min-width: 1.5rem; min-height: 1.5rem; padding: 0; border: 0; background: none; font: 400 1.375rem/1 var(--sans); color: var(--ink-2); cursor: pointer; }
+.table button.go:focus { outline: none; }
+.table tr[data-tx]:hover button.go, .table button.go:focus-visible { color: var(--ink); }
+.table .sub { display: block; margin-top: 0.125rem; color: var(--ink-3); }
+.tblwrap { overflow: auto; }
+.tblwrap th { position: sticky; top: 0; background: var(--paper); }
+.fig-t { font-family: var(--serif); font-weight: 600; font-size: 1.0625rem; }
+
+/* ---------- Alarm lines (KIT.alarms): priority order, a shape and a word, never colour alone ---------- */
+.alarms { list-style: none; margin: 0; padding: 0; }
+.al { display: grid; grid-template-columns: 1.25rem 1fr; gap: 0 0.625rem; padding: 0.625rem 0 0.6875rem; border-bottom: var(--hair) solid var(--rule); }
+.al:first-child { border-top: var(--hair) solid var(--ink); }
+.al svg { margin-top: var(--s-1); }
+.al .st { font-weight: 700; }
+.al.hi .st { color: var(--alarm); }
+.al.mid .st { color: var(--warn); }
+.al .at { font: 600 1.0625rem/1 var(--serif); }
+.al-hi { fill: var(--alarm); }
+.al-mid { fill: var(--warn-mark); stroke: var(--warn); }
+
+/* ---------- Range bar (KIT.rangeBar): where a value sits among the last days ---------- */
+.rg { display: grid; grid-template-columns: 3rem minmax(8rem, 1fr) 3rem 8.75rem; gap: 0 0.625rem; align-items: center; }
+.rg .lo { text-align: right; color: var(--ink-3); }
+.rg .hi { color: var(--ink-3); }
+.rg .track { position: relative; height: 0.5rem; background: var(--rule); }
+.rg .mk { position: absolute; top: -0.4375rem; width: 3px; height: 1.375rem; margin-left: -1.5px; background: var(--ink); }
+.rg .out { font-weight: 600; }
+.rg .out.dn { color: var(--warn); }
+/* the key in a column head: the same track, its ends and mark named once */
+.rgkey { display: flex; align-items: center; gap: var(--s-2); margin-top: var(--s-1); color: var(--ink-3); font-weight: 400; white-space: nowrap; }
+.rgkey .track { position: relative; width: 4rem; height: 0.375rem; background: var(--rule); }
+.rgkey .mk, .rgkey .now::before { position: absolute; left: 62%; top: -0.3125rem; width: 3px; height: 1rem; margin-left: -1.5px; background: var(--ink); }
+.rgkey .now { position: relative; margin-left: var(--s-3); padding-left: 0.625rem; color: var(--ink-2); }
+.rgkey .now::before { content: ''; left: 0; top: 0.1875rem; margin: 0; }
+
+/* ---------- Proportion bar (KIT.prop): a part of a whole, both named with their counts ---------- */
+.prop { display: grid; grid-template-columns: 1fr auto; gap: var(--s-1) var(--s-4); align-items: baseline; }
+.prop .track { grid-column: 1 / -1; display: flex; gap: 2px; height: 0.625rem; }
+.prop .track i { display: block; background: var(--cmp-fill); }
+.prop .track i.part { background: var(--ink); min-width: 3px; }
+.prop .a { color: var(--ink-2); }
+.prop .b { color: var(--ink); font-weight: 600; text-align: right; }
+
+/* ---------- Stamp: every mockup says its data is simulated ---------- */
+.sim { position: fixed; right: var(--s-4); bottom: var(--s-4); z-index: 50; padding: 0.125rem 0.5rem; background: var(--paper); color: var(--ink); border: var(--hair) solid var(--ink); font-weight: 700; pointer-events: none; }
+.mast .sim { position: static; padding: 0; background: none; border: 0; color: var(--ink); }
+
+/* ---------- Status words: normal is plain; an alarm takes a square, a warning a triangle, always with the word ---------- */
+.state { display: inline-flex; align-items: baseline; gap: var(--s-2); white-space: nowrap; }
+.state.bad { color: var(--alarm); font-weight: 600; }
+.state.bad::before { content: ""; flex: none; width: 0.625rem; height: 0.625rem; background: var(--alarm); }
+.state.warn { color: var(--warn); font-weight: 600; }
+.state.warn::before { content: ""; flex: none; width: 0.75rem; height: 0.6875rem; background: var(--warn-mark); clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+
+/* ---------- Buttons, inputs, the dropdown trigger and popover sheet (the calendar popover uses them) ---------- */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--s-2); min-height: 2.75rem; padding: 0 var(--s-5); border: var(--hair) solid transparent; border-radius: var(--r-ctl); font-weight: 600; white-space: nowrap; transition: background-color var(--d-fast) var(--ease); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-primary { background: var(--ink); color: var(--paper); }
+.btn-primary:hover:not(:disabled) { background: var(--ink-2); }
+.btn-ghost { background: transparent; border-color: var(--cmp); color: var(--ink); }
+.btn-ghost:hover:not(:disabled) { background: var(--paper-2); }
+.btn-sm { min-height: 2.25rem; padding: 0 var(--s-4); }
+.input { width: 100%; min-height: 2.75rem; padding: 0 var(--s-3); background: var(--field); border: var(--hair) solid var(--cmp); border-radius: var(--r-ctl); transition: border-color var(--d-fast); }
+.input:hover { border-color: var(--ink-3); }
+.input:focus { outline: none; border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
+.input::placeholder { color: var(--ink-3); }
+.input-sm { min-height: 2.25rem; }
+.drop { display: inline-flex; align-items: center; gap: var(--s-2); min-height: 2.25rem; padding: 0 var(--s-3); background: var(--field); color: var(--ink); border: var(--hair) solid var(--cmp); border-radius: var(--r-ctl);
+  line-height: 1.2; text-align: left; white-space: nowrap; cursor: pointer; transition: border-color var(--d-fast); }
+.drop::after { content: ""; flex: none; width: 0.375rem; height: 0.375rem; margin-left: auto; border: solid currentColor; border-width: 0 2px 2px 0; transform: rotate(45deg) translateY(-2px); }
+.drop:hover { border-color: var(--ink); }
+.drop[aria-expanded="true"] { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
+.drop[aria-expanded="true"]::after { transform: rotate(225deg) translateY(-2px); }
+.drop:disabled { color: var(--ink-2); background: transparent; border-color: var(--rule); cursor: default; }
+.drop:disabled::after { display: none; }
+/* a popover floats, so it is the one place a sheet gets an edge: a 1 px ink line, no shadow */
+.pop { padding: var(--s-2); background: var(--paper); border: var(--hair) solid var(--ink); color: var(--ink); }
+.pop[hidden] { display: none; }
+/* Calendar web components (cally), drawn in ink */
+calendar-range, calendar-date { display: block; }
+calendar-range[hidden], calendar-date[hidden] { display: none; }
+calendar-range svg, calendar-date svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+calendar-range::part(container), calendar-date::part(container) { display: block; }
+calendar-range::part(header), calendar-date::part(header) { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--s-1); }
+calendar-range::part(heading), calendar-date::part(heading) { display: none; }
+calendar-range::part(months), calendar-date::part(months) { display: flex; gap: var(--s-8); }
+calendar-range::part(button), calendar-date::part(button) { display: flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; padding: 0; background: none; border: 0; color: var(--ink); cursor: pointer; border-radius: var(--r-ctl); }
+calendar-range::part(button):hover, calendar-date::part(button):hover { background: var(--paper-2); }
+calendar-range::part(disabled), calendar-date::part(disabled) { color: var(--cmp-fill); cursor: default; }
+calendar-month { --color-accent: var(--ink); --color-text-on-accent: var(--paper); }
+calendar-month::part(heading) { margin-bottom: var(--s-1); font-family: var(--serif); font-weight: 600; text-align: center; }
+calendar-month::part(th) { padding: 0 0 var(--s-1); color: var(--ink-3); font-weight: 500; text-align: center; }
+calendar-month::part(td) { padding: 0; }
+calendar-month::part(button) { width: 2.25rem; height: 2.25rem; padding: 0; border: 0; border-radius: 0; background: none; color: var(--ink); font: inherit; cursor: pointer; }
+calendar-month::part(button):hover { background: var(--paper-2); }
+calendar-month::part(today) { font-weight: 700; text-decoration: underline; text-underline-offset: 0.25em; }
+calendar-month::part(disallowed) { color: var(--cmp-fill); cursor: default; }
+/* order matters: every selected day carries "selected", so the inner days and then the two ends override it */
+calendar-month::part(selected) { background: var(--ink); color: var(--paper); }
+calendar-month::part(range-inner) { background: var(--paper-2); color: var(--ink); }
+calendar-month::part(range-start), calendar-month::part(range-end) { background: var(--ink); color: var(--paper); }
+calendar-month::part(range-inner):hover { background: var(--paper-2); }
+calendar-month::part(button):focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+
+/* ---------- Tooltip (kit.js, [data-tip]): the readout's look, fixed to the viewport ----------
+   Text that holds more on hover carries a dotted underline and the help cursor; ::before bridges the gap to the tip. */
+[data-tip]:not(a) { text-decoration: underline dotted 2px var(--ink-3); text-underline-offset: 0.3em; cursor: help; }
+[data-tip]:not(a):focus { outline: none; }
+[data-tip]:not(a):focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.readout.tip { position: fixed; z-index: 50; max-width: min(20rem, calc(100vw - 1rem)); min-width: 0; white-space: normal; color: var(--ink); font-weight: 400; pointer-events: auto; }
+.readout.tip::before { content: ''; position: absolute; inset: -0.5rem 0; z-index: -1; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+/* the phone's filter trigger exists only once kit.js made it on a phone; it never shows from 600 px up */
+.ctl-sum { display: none; }
+
+/* ---------- Tablet and phone (below 1366 px): every rule here sits under a max-width query, so 1366 and up never change ----------
+   Touch targets reach 44 x 44 px (WCAG 2.5.5); wide tables scroll inside .tscroll (kit.js wraps them), the page itself never scrolls sideways. */
+@media (max-width: 1365px) {
+  .page { padding: 0 var(--s-6) var(--s-10); }
+  .pick, .sections a, .switch button, .tick { min-height: 2.75rem; }
+  .pick, .sections a, .switch button { display: inline-flex; align-items: center; justify-content: center; min-width: 2.75rem; }
+  .datef, .drop, .btn, .btn-sm, .input { min-height: 2.75rem; }
+  .opts { flex-wrap: wrap; column-gap: 1.25rem; }
+  .controls { column-gap: var(--s-6); }
+  .controls legend { padding-top: var(--s-1); }
+  .table th .sort { display: inline-flex; align-items: center; min-height: 2.75rem; text-align: inherit; }
+  .table td.go { width: 2.75rem; }
+  .table button.go { min-width: 2.75rem; min-height: 2.75rem; }
+  .tscroll { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+  .tscroll > .table { width: max-content; min-width: 100%; }
+  /* the row's name stays in view while the figures scroll under it */
+  .tscroll > .table th:first-child, .tscroll > .table td:first-child { position: sticky; left: 0; z-index: 1; background: var(--paper); padding-right: var(--s-3); }
+  .tscroll > .table tr[data-tx]:hover td:first-child, .tscroll > .table tr[data-tx]:focus-within td:first-child { background: var(--paper-2); }
+  /* a table that still scrolls says so: the cut edge fades out (kit.js sets data-more), and once scrolled the pinned column gets a hairline edge */
+  .tscroll[data-more~="r"] { -webkit-mask-image: linear-gradient(to left, transparent, var(--ink) 3rem); mask-image: linear-gradient(to left, transparent, var(--ink) 3rem); }
+  .tscroll[data-more~="l"] > .table :is(th, td):first-child { box-shadow: inset -1px 0 var(--rule); }
+  .readout { max-width: 100%; white-space: normal; }
+  .readout div span:last-child { white-space: nowrap; }
+  /* a link inside an alarm line: a 44 px tall hit area that leaves the line where it was */
+  .al p a { display: inline-block; padding: 0.625rem 0; margin: -0.625rem 0; line-height: 1.5rem; }
+  calendar-month::part(button) { width: 2.75rem; height: 2.75rem; }
+  calendar-range::part(button), calendar-date::part(button) { width: 2.75rem; height: 2.75rem; }
+}
+@media (max-width: 599px) {
+  .page { padding: 0 var(--s-4) var(--s-10); }
+  /* the flag, then its name on its own line, then the date line */
+  .mast { flex-direction: column; align-items: stretch; gap: var(--s-2); }
+  .brand { flex-wrap: wrap; row-gap: var(--s-1); }
+  .brand span { flex-basis: 100%; }
+  .meta { justify-content: flex-start; gap: 0 var(--s-5); }
+  /* the section line becomes one row that scrolls sideways inside itself; kit.js keeps the current section in view */
+  .sections { flex-wrap: nowrap; gap: 0 var(--s-5); overflow-x: auto; scrollbar-width: none; }
+  .sections::-webkit-scrollbar { display: none; }
+  .sections a { flex: none; }
+  .sections .later { margin-left: 0; padding-left: var(--s-5); }
+  .title h1 { font-size: 2rem; }
+  /* metric tabs: the first spans the row, the other two share the next */
+  .metrics { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: var(--s-5); }
+  .metric:first-child { grid-column: 1 / -1; }
+  .metric { --fig: 2.375rem; --fig-off: 1.75rem; }
+  .metric .chg { white-space: normal; }
+  .head { column-gap: var(--s-5); }
+  /* calendar: one month, the typed fields side by side at half width each */
+  .cal.pop { padding: var(--s-2); max-width: 100%; }
+  .cal-fields { gap: var(--s-3); }
+  .cal-fields label { flex: 1 1 0; min-width: 0; }
+  .cal-fields .input { width: 100%; }
+  .cal calendar-month[offset="1"] { display: none; }
+  .cal-foot { flex-wrap: wrap; }
+  /* the filter row folds behind one trigger that names the current choice (kit.js periodUI), so the first screen opens on the figures */
+  .ctl-sum { display: flex; width: 100%; min-height: 2.75rem; margin: var(--s-1) 0 0; }
+  .ctl-sum span:not(.sr-only) { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .ctl-sum[aria-expanded="true"] { margin-bottom: var(--s-2); }
+  .controls.shut, .ctl-sum:has(+ .controls[hidden]) { display: none; }
+  /* a chart's end labels leave the plot for a row under it, in the plot's order: today in ink, the comparison grey (kit.js plot) */
+  .plot-ends { display: flex; flex-wrap: wrap; gap: var(--s-1) var(--s-5); margin: var(--s-2) 0 0; padding: 0; list-style: none; color: var(--ink); }
+  .plot-ends li { white-space: nowrap; }
+  .plot-ends .c { color: var(--ink-2); }
+  .plot-ends b { font-weight: 700; }
+  .plot-ends .c b { font-weight: 600; }
+  .plot[hidden] + .plot-ends, .plot-ends[hidden] { display: none; }
+  /* a stacked table: each row is a small grid on the table's shared columns (subgrid), so secondary columns become a second
+     line instead of a sideways scroll; the page places its cells, the header row follows the same places */
+  .table.stack, .tscroll > .table.stack { display: grid; width: 100%; column-gap: var(--s-3); }
+  .table.stack > :is(thead, tbody) { display: contents; }
+  .table.stack tr { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; grid-auto-flow: row dense; row-gap: 0.125rem; align-items: baseline;
+    padding: var(--s-2) 0; border-bottom: var(--hair) solid var(--rule); }
+  .table.stack thead tr { align-items: end; border-bottom-color: var(--ink); }
+  .table.stack tr.total { border-top: 2px solid var(--ink); border-bottom: 0; }
+  .table.stack :is(th, td), .tscroll > .table.stack :is(th, td):first-child { display: block; position: static; height: auto; min-width: 0; padding: 0; border: 0; background: none; box-shadow: none; }
+  .table.stack tr.total td { border: 0; }
+  .table.stack td:empty { display: none; }
+  .table.stack td[colspan] { grid-column: 1 / -1; }
+  .table.stack tr[data-tx]:hover, .table.stack tr[data-tx]:focus-within { background: var(--paper-2); }
+  .table.stack .r { text-align: right; }
+  .table.stack .l { text-align: left; }
+  .tblwrap .table.stack th { position: static; }
+  .tblwrap .table.stack thead tr { position: sticky; top: 0; z-index: 1; background: var(--paper); }
+  /* a chart's own table: the label, today and the comparison on the first line, the difference under them */
+  .tblwrap > .table.stack { grid-template-columns: minmax(min-content, 1fr) auto auto; }
+  .tblwrap > .table.stack :is(th, td):nth-child(2) { grid-column: 2; }
+  .tblwrap > .table.stack :is(th, td):nth-child(3) { grid-column: 3; }
+  .tblwrap > .table.stack :is(th, td):nth-child(4) { grid-column: 2 / -1; }
+  .tblwrap > .table.stack th { white-space: normal; }
+}

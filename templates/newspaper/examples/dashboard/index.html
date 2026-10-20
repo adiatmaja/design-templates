@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en" class="news">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Revenue summary - Example Co.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400..800&family=Source+Serif+4:opsz,wght@8..60,400..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../kit/mockup/kit.css">
+  <style>
+    /* page layout only; every component comes from kit/mockup/kit.css */
+    .grid { display: grid; grid-template-columns: minmax(0, 1fr) 26rem; gap: 0 var(--s-12); margin-top: var(--gap-page); }
+    .main { grid-column: 1; min-width: 0; }
+    .side { grid-column: 2; grid-row: 1; }
+    .loc { grid-column: 1 / -1; margin-top: var(--gap-block); }
+    #panel .head { margin: var(--s-4) 0 0; }
+    .chart, #tbl { height: clamp(15rem, calc(100vh - 48rem), 26rem); margin-top: var(--s-3); }
+    .side .sub { margin-bottom: var(--s-3); }
+    .srcs { margin-top: var(--s-5); }
+    .srcs td { height: 2.5rem; }
+    .rej { margin-top: var(--s-5); }
+    .rej .n { display: flex; align-items: baseline; gap: var(--s-3); margin-bottom: var(--s-2); }
+    .rej .n b { font: 600 var(--fs-fig-sm)/1 var(--serif); font-variation-settings: 'opsz' 60; }
+    #locT { margin-top: var(--gap-head); }
+    #locT td { height: 3rem; }
+    #locT td.name { font-weight: 600; }
+    #locT .share { margin-left: 0.625rem; color: var(--ink-3); font-weight: 400; }
+    #locT td.name, #locT td.r { white-space: nowrap; }
+    .quiet { color: var(--ink-2); }
+    /* wide screens: the store table joins the left column, so chart and table share the first screen */
+    @media (min-width: 1600px) {
+      .side { grid-row: 1 / span 2; }
+      .loc { grid-column: 1; grid-row: 2; }
+      .page { padding-bottom: var(--s-3); }
+    }
+    @media (max-width: 1250px) {
+      .grid { grid-template-columns: minmax(0, 1fr); }
+      .side { grid-column: 1; grid-row: auto; margin-top: var(--gap-block); }
+      .loc { grid-column: 1; }
+    }
+    /* phone: the tables stack (kit.css .stack), so every amount stays on screen without a sideways scroll */
+    @media (max-width: 599px) {
+      #srcs { grid-template-columns: minmax(0, 1fr) auto; }
+      #srcs :is(th, td):nth-child(even) { text-align: right; }
+      #locT { grid-template-columns: minmax(0, 1fr) auto; }
+      #locT td { height: auto; }
+      #locT td.name, #locT .state { white-space: normal; }
+      #locT .r { grid-column: 2; }
+      #locT :is(th, td):nth-last-child(2) { grid-column: 1 / -1; padding-top: var(--s-1); }
+      #locT .rg { grid-template-columns: 2.5rem minmax(0, 1fr) 2.5rem auto; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <header class="mast">
+    <a class="brand"><b>Example Co.</b><span>Revenue desk</span></a>
+    <p class="meta"><span id="dateTxt"></span><span>Data to <b id="cutTxt"></b> UTC</span><span class="sim">Simulated data</span></p>
+  </header>
+  <nav class="sections" aria-label="Main menu">
+    <a href="index.html" aria-current="page">Summary</a>
+    <a href="../deck/index.html">Example deck</a>
+    <a href="../../kit/styleguide.html">Style guide</a>
+    <a href="../../kit/styleguide.html#components" class="later">Settlement (later)</a>
+  </nav>
+
+  <section class="title" aria-labelledby="h1">
+    <h1 id="h1">Revenue summary</h1>
+  </section>
+
+  <form class="controls" id="ctl" aria-label="Filters">
+    <fieldset>
+      <legend>Store</legend>
+      <div class="opts">
+        <label class="pick"><input type="radio" name="store" value="all">All</label>
+        <label class="pick"><input type="radio" name="store" value="north">North</label>
+        <label class="pick"><input type="radio" name="store" value="south">South</label>
+        <label class="pick"><input type="radio" name="store" value="harbour">Harbour</label>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Payment</legend>
+      <div class="opts">
+        <label class="tick"><input type="checkbox" name="pay" value="card">Card</label>
+        <label class="tick"><input type="checkbox" name="pay" value="mobile">Mobile</label>
+        <label class="tick"><input type="checkbox" name="pay" value="cash">Cash</label>
+        <span class="guard" id="guard" role="status" aria-live="polite"></span>
+      </div>
+    </fieldset>
+  </form>
+
+  <div class="grid">
+    <section class="main" aria-label="Headline figures and chart">
+      <div class="metrics" role="tablist" aria-label="Headline figures">
+        <button class="metric" role="tab" id="t-rev" data-m="rev" aria-controls="panel"><span class="lbl">Revenue</span><span class="val"></span><span class="chg"></span></button>
+        <button class="metric" role="tab" id="t-ord" data-m="ord" aria-controls="panel"><span class="lbl">Orders</span><span class="val"></span><span class="chg"></span></button>
+        <button class="metric" role="tab" id="t-avg" data-m="avg" aria-controls="panel"><span class="lbl">Average order</span><span class="val"></span><span class="chg"></span></button>
+      </div>
+      <div id="panel" role="tabpanel">
+        <div class="head">
+          <div><h2 id="cTitle"></h2><p class="sub legend" id="cKey"></p></div>
+          <div class="switch" role="group" aria-label="View">
+            <button type="button" data-view="chart">Chart</button>
+            <button type="button" data-view="table">Table</button>
+          </div>
+        </div>
+        <div class="plot chart" id="chart" tabindex="0" role="group" aria-roledescription="chart">
+          <svg id="svg" aria-hidden="true"></svg>
+          <div class="readout" id="readout" aria-live="polite" hidden></div>
+        </div>
+        <div class="tblwrap" id="tbl" tabindex="0" hidden></div>
+        <p class="src" id="src"></p>
+      </div>
+    </section>
+
+    <aside class="side" aria-labelledby="hData">
+      <h2 class="ruled" id="hData">Data completeness</h2>
+      <p class="sub" id="dataDef"></p>
+      <ol class="alarms" id="alarms" aria-label="Active alarms, by priority"></ol>
+      <table class="table srcs stack" id="srcs"></table>
+      <div class="rej" id="rej"></div>
+    </aside>
+
+    <section class="loc" aria-labelledby="hLoc">
+      <h2 class="ruled" id="hLoc">Revenue by store</h2>
+      <table class="table stack" id="locT"></table>
+    </section>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="../../kit/mockup/kit.js"></script>
+<script>
+(function () {
+  'use strict';
+  const D = window.DEMO, K = window.KIT, MIN = 60000, HOUR = 3600000, DAY = 86400000;
+  const IDS = D.STORES.map((s) => s.id), METHODS = D.METHODS.map((m) => m[0]);
+  const NAME = Object.fromEntries(D.STORES.map((s) => [s.id, s.name])), SHORT = Object.fromEntries(D.STORES.map((s) => [s.id, s.short]));
+  const PICK = { all: IDS, ...Object.fromEntries(IDS.map((id) => [id, [id]])) };
+  const $ = (id) => document.getElementById(id);
+  const { OPEN, CLOSE, CUT, TODAY } = D, DAY0 = K.dstart(TODAY), CUTOFF = CUT - DAY0;
+  const OFF = D.OUTAGE, REJECTED = 6;
+
+  // ---- formats (illustrative figures; times in UTC) ----
+  const WD3 = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const hm = (ts) => { const d = new Date(ts); return `${K.p2(d.getUTCHours())}:${K.p2(d.getUTCMinutes())}`; };
+  const keyAt = (ts) => new Date(ts).toISOString().slice(0, 10);
+  const dLong = (ts) => { const d = new Date(ts); return `${K.WEEKDAY[d.getUTCDay()]}, ${d.getUTCDate()} ${K.MONTH[d.getUTCMonth()]} ${d.getUTCFullYear()}`; };
+  const dMid = (ts) => { const d = new Date(ts); return `${WD3[d.getUTCDay()]} ${d.getUTCDate()} ${K.MON[d.getUTCMonth()]}`; };
+  const dShort = (ts) => { const d = new Date(ts); return `${WD3[d.getUTCDay()]} ${d.getUTCDate()}`; };
+  const MINUS = '−';
+  const num = K.num;
+  const usd = (n) => '$' + num(n);
+  const k1 = (n) => (n / 1000).toLocaleString('en-US', { maximumFractionDigits: 1 });
+  // the sign only when the shown figure is not zero
+  const sgn = (n, f) => { const t = f(Math.abs(n)); return (/[1-9]/.test(t) ? (n > 0 ? '+' : MINUS) : '') + t; };
+  const dec1 = (x) => x.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const pctOf = (a, b) => (b ? (a - b) / b * 100 : null);
+  const pctTxt = (p) => { if (p == null) return ''; const r = Math.round(p * 10) / 10; return (r > 0 ? '+' : r < 0 ? MINUS : '') + dec1(Math.abs(r)); };
+  const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+
+  // ---- metrics: one definition each, used by tabs, chart, readout and table ----
+  const MET = {
+    rev: { lbl: 'Revenue', of: (a) => a.t, full: usd, short: (v) => '$' + k1(v) + 'k', tick: (v) => '$' + k1(v) + 'k' },
+    ord: { lbl: 'Orders', of: (a) => a.c, full: num, short: num, tick: num },
+    avg: { lbl: 'Average order', of: (a) => (a.c ? a.t / a.c : null), full: (v) => '$' + dec1(v), short: (v) => '$' + dec1(v), tick: (v) => '$' + num(v) }
+  };
+  const diffTxt = (key, a, b) => (a == null || b == null ? '-' : `${sgn(a - b, MET[key].full)} (${pctTxt(pctOf(a, b))}%)`);
+
+  // ---- period, comparison and step: one state from kit.js; today ends at CUT ----
+  const P = K.period({ today: TODAY, cut: CUT, start: D.START });
+  const HOURS = []; for (let h = OPEN; h < CLOSE; h++) HOURS.push(h);
+  const agg = (from, to, ids, m) => D.sum(from, to, ids, m);
+
+  // ---- state in the URL hash ----
+  const DEF = { store: 'all', pay: METHODS.slice(), m: 'rev', v: 'chart' };
+  function readHash() {
+    const q = new URLSearchParams(location.hash.slice(1)), S = { ...DEF, pay: DEF.pay.slice(), ...P.fix(P.read(q)) };
+    if (PICK[q.get('store')]) S.store = q.get('store');
+    if (q.has('pay')) { const b = q.get('pay').split(','); const k = METHODS.filter((x) => b.includes(x)); if (k.length) S.pay = k; }
+    if (MET[q.get('m')]) S.m = q.get('m');
+    if (['chart', 'table'].includes(q.get('v'))) S.v = q.get('v');
+    return S;
+  }
+  const hashOf = (S) => `#${P.params(S)}&store=${S.store}&pay=${S.pay.join(',')}&m=${S.m}&v=${S.v}`;
+  let S = readHash();
+
+  // ---- the model of the current state; B is null when there is no comparison or it lies outside the data ----
+  let M = null;
+  function compute() {
+    const ids = PICK[S.store], m = S.pay.length === METHODS.length ? null : S.pay.slice();
+    const w = P.win(S.p), c0 = P.cmp(w, S.vs, S.vc), c = c0 && c0.ok ? c0 : null;
+    const A = agg(w.from, w.to + 1, ids, m), B = c && agg(c.from, c.to + 1, ids, m);
+    return { w, c, ids, m, A, B, off: c ? w.from - c.from : 0, ...P.names(w, c) };
+  }
+
+  // ---- headline figures = tabs ----
+  function renderTabs() {
+    document.querySelectorAll('.metric').forEach((t) => {
+      const k = t.dataset.m, a = MET[k].of(M.A), b = M.B && MET[k].of(M.B), on = k === S.m;
+      t.setAttribute('aria-selected', on); t.tabIndex = on ? 0 : -1;
+      const v = t.querySelector('.val'); v.textContent = a == null ? '-' : MET[k].full(a); v.dataset.v = a == null ? '' : Math.round(a);
+      t.querySelector('.chg').textContent = M.B ? diffTxt(k, a, b) : '';
+    });
+    $('panel').setAttribute('aria-labelledby', 't-' + S.m);
+  }
+
+  // ---- chart model: one day = cumulative line; per hour over days = one point per opening hour;
+  //      per day = paired bars, or a line when the bars would be too thin ----
+  function chartModel() {
+    const { w, c, ids, m, off } = M, met = MET[S.m];
+    if (w.n === 1) {
+      const d0 = w.from, start = d0 + OPEN * HOUR, end = w.running ? CUT : d0 + CLOSE * HOUR, step = (w.running ? 5 : 10) * MIN;
+      const ts = []; for (let t = start; t < end; t += step) ts.push(t); ts.push(end);
+      const pts = ts.map((t) => ({ t, cur: met.of(agg(d0, t, ids, m)), cmp: c ? met.of(agg(d0 - off, t - off, ids, m)) : null }));
+      const hours = []; for (let h = OPEN; h <= CLOSE; h++) { const t = d0 + h * HOUR; if (t <= end) hours.push(t); }
+      let close = null;
+      if (w.running && c) {
+        const v = met.of(agg(c.from, c.from + CLOSE * HOUR, ids, m)), what = S.m === 'ord' ? `${num(v)} orders` : met.short(v);
+        close = { v, rise: S.m !== 'avg', text: S.m === 'avg' ? `${M.cmpLbl}, full day ${what}` : `${M.cmpLbl} at ${CLOSE}:00: ${what}` };
+      }
+      const bands = w.running && ids.includes(OFF.id) ? [{ from: OFF.since, to: CUT, text: 'Harbour offline' }] : [];
+      return { kind: 'line', mode: 'cum', pts, x0: start, x1: end, xTicks: hours, xTick: hm, now: w.running ? end : null, yTick: met.tick, close, bands,
+        ends: c ? { cur: M.cur, cmp: M.cmpLbl, fmt: met.short, diff: (a, b) => `Difference ${sgn(a - b, met.short)}` } : null, end: pts[pts.length - 1].cur };
+    }
+    if (S.per === 'hour') {
+      const pts = [];
+      for (let i = 0; i < w.n; i++) {
+        const k = K.addDays(w.fk, i), kc = c && K.addDays(c.fk, i);
+        HOURS.forEach((h) => { const ts = K.dstart(k) + h * HOUR, tc = c && K.dstart(kc) + h * HOUR;
+          pts.push({ t: pts.length, ts, h, cur: ts <= w.to ? met.of(agg(ts, ts + HOUR, M.ids, m)) : null, cmp: c && tc <= c.to ? met.of(agg(tc, tc + HOUR, M.ids, m)) : null }); });
+      }
+      return { kind: 'line', mode: 'hour', pts, x0: 0, x1: pts.length - 1, xTicks: pts.filter((p) => p.h === OPEN).map((p) => p.t), xTick: (t) => dShort(pts[t].ts),
+        now: null, yTick: met.tick, close: null, bands: [], ends: null, end: met.of(M.A) };
+    }
+    const pts = [];
+    for (let i = 0; i < w.n; i++) {
+      const t = K.dstart(K.addDays(w.fk, i)), tc = c && K.dstart(K.addDays(c.fk, i));
+      pts.push({ t, cur: met.of(agg(t, t + DAY, ids, m)), cmp: c ? met.of(agg(tc, Math.min(tc + DAY, c.to + 1), ids, m)) : null, partial: w.running && i === w.n - 1 });
+    }
+    if (w.n <= 60) return { kind: 'bar', mode: 'day', pts, xLabel: (p) => dShort(p.t), xSub: (p) => (p.partial ? 'running' : ''), yTick: met.tick, end: met.of(M.A) };
+    const months = pts.filter((p) => new Date(p.t).getUTCDate() === 1).map((p) => p.t);
+    return { kind: 'line', mode: 'long', pts, x0: pts[0].t, x1: pts[pts.length - 1].t, xTicks: months.length ? months : [pts[0].t],
+      xTick: (t) => { const d = new Date(t); return `${K.MON[d.getUTCMonth()]} ${d.getUTCFullYear()}`; }, now: null, yTick: met.tick, close: null, bands: [], ends: null, end: met.of(M.A) };
+  }
+
+  const plot = K.plot($('chart'), {
+    readout(i, C) {
+      const p = C.pts[i], met = MET[S.m], ts = C.mode === 'hour' ? p.ts : p.t;
+      const head = C.mode === 'cum' ? `At ${hm(p.t)}` : C.mode === 'hour' ? `${dLong(ts)}, ${hm(ts)}–${hm(ts + HOUR)}`
+        : dLong(ts) + (p.partial ? `, to ${hm(CUT)}` : '');
+      const curL = C.mode === 'cum' ? M.cur : dMid(ts), cmpL = C.mode === 'cum' ? M.cmpLbl : dMid(ts - M.off);
+      return `<b>${head}</b><div><span>${curL}</span><span>${p.cur == null ? '-' : met.full(p.cur)}</span></div>` + (M.c
+        ? `<div><span>${cmpL}</span><span>${p.cmp == null ? '-' : met.full(p.cmp)}</span></div><div class="tot"><span>Difference</span><span>${diffTxt(S.m, p.cur, p.cmp)}</span></div>` : '');
+    },
+    label: (C) => `${$('cTitle').textContent}. ${M.cur} ${C.end == null ? '' : MET[S.m].full(C.end)}. Left and right arrow keys read each point.`
+  });
+
+  // ---- chart head: a title and its key; the source as one line ----
+  let C = null;
+  function renderChartHead() {
+    const { w, c, when } = M, met = MET[S.m];
+    $('cTitle').textContent = C.mode === 'cum' ? { rev: `Cumulative revenue, ${when}`, ord: `Cumulative orders, ${when}`, avg: `Average order since ${OPEN}:00, ${when}` }[S.m]
+      : `${met.lbl} per ${C.mode === 'hour' ? 'hour' : 'day'}, ${when}`;
+    const ln = C.kind === 'line', cmpKey = c ? `<span><i class="key ${ln ? 'ln ' : ''}k-cmp"></i>${C.mode === 'cum' ? M.cmpLbl : cap(M.cmpName)}${C.mode === 'cum' && w.running ? ', to the same time' : ''}</span>` : '';
+    $('cKey').hidden = !!C.ends;   // the lines' end labels name both series
+    $('cKey').innerHTML = `<span><i class="key ${ln ? 'ln' : 'k-cur'}"></i>${M.cur}</span>${cmpKey}` +
+      (C.mode === 'day' && w.running ? `<span><i class="key k-run"></i>Today, to ${hm(CUT)}</span>` : '');
+    $('src').textContent = 'Source: till systems of ' + M.ids.map((id) => NAME[id]).join(', ') + '. Illustrative figures.';
+  }
+  // the chart's figures as rows; each figure cell carries its value in data-v
+  function renderTable() {
+    const met = MET[S.m], cum = C.mode === 'cum', cmp = !!M.c, f = (v) => (v == null ? '-' : met.full(v));
+    const dv = (v) => (v == null ? '' : ` data-v="${Math.round(v)}"`);
+    let rows;
+    if (cum) rows = C.pts.filter((p, i) => i === C.pts.length - 1 || ((p.t - M.w.from) % HOUR === 0 && p.t > C.x0)).map((p) => [hm(p.t), p.cur, p.cmp]);
+    else if (C.mode === 'hour') rows = C.pts.map((p) => [`${dMid(p.ts)}, ${hm(p.ts)}`, p.cur, p.cmp]);
+    else rows = C.pts.map((p) => [`${dMid(p.t)}${p.partial ? ', to ' + hm(CUT) : ''}`, p.cur, p.cmp]);
+    const head = cum ? ['Time', `${M.cur}, cumulative`, `${M.cmpLbl}, cumulative`] : [C.mode === 'hour' ? 'Hour' : 'Date', M.cur, cap(M.cmpName)];
+    const tail = (b, a) => (cmp ? `<td class="r">${f(b)}</td><td class="r">${diffTxt(S.m, a, b)}</td>` : '');
+    let html = `<table class="table stack" aria-label="${$('cTitle').textContent}"><thead><tr><th>${head[0]}</th><th class="r">${head[1]}</th>` +
+      (cmp ? `<th class="r">${head[2]}</th><th class="r">Difference</th>` : '') + '</tr></thead><tbody>' +
+      rows.map((r) => `<tr><td>${r[0]}</td><td class="r"${dv(r[1])}>${f(r[1])}</td>${tail(r[2], r[1])}</tr>`).join('');
+    if (!cum) { const a = met.of(M.A), b = M.B && met.of(M.B); html += `<tr class="total"><td>${S.m === 'avg' ? 'Whole period' : 'Total'}</td><td class="r"${dv(a)}>${f(a)}</td>${tail(b, a)}</tr>`; }
+    $('tbl').innerHTML = html + '</tbody></table>';
+  }
+
+  // ---- by store: the definition lives in the column heads and the range key ----
+  function renderLoc() {
+    const { w, ids, m, A, B } = M, ref = K.dstart(w.tk), span = w.running ? CUTOFF : DAY;
+    // the same part of the day on each of the 14 days before the period's last day, as far back as the data goes
+    const hist = []; for (let k = 1; k <= 14 && ref - k * DAY >= K.dstart(P.start); k++) hist.push(agg(ref - k * DAY, ref - k * DAY + span, ids, m));
+    const mark = agg(ref, ref + span, ids, m);
+    const refName = w.running ? 'today' : w.tk === K.addDays(TODAY, -1) ? 'yesterday' : K.dmy(w.tk), partTxt = w.running ? `to ${hm(CUT)}` : 'full day';
+    const rangeOf = (get) => { const v = hist.map(get); return { lo: Math.min(...v), hi: Math.max(...v), x: get(mark) }; };
+    const rgCell = (r) => (hist.length ? K.rangeBar(r, k1, (word) => `Daily revenue, previous ${hist.length} days, ${partTxt}, between ${usd(r.lo)} and ${usd(r.hi)}; ${refName} ${usd(r.x)}, ${word}.`) : '-');
+    // shares by largest remainder, so they add up to 100
+    const raw = ids.map((id) => (A.t ? A.site[id].t / A.t * 100 : 0)), sh = raw.map(Math.floor);
+    raw.map((v, i) => [i, v - sh[i]]).sort((a, b) => b[1] - a[1]).slice(0, 100 - sh.reduce((a, b) => a + b, 0)).forEach((e) => { if (A.t) sh[e[0]]++; });
+    const status = (id) => id === OFF.id && w.running ? '<span class="state bad">Data incomplete</span>' : `<span class="quiet">Open to ${CLOSE}:00</span>`;
+    const rows = ids.map((id, i) => ({ id, t: A.site[id].t, y: B && B.site[id].t, sh: sh[i] })).sort((a, b) => b.t - a.t);
+    $('locT').innerHTML = `<thead><tr><th>Store</th><th class="r">Revenue</th>${B ? `<th class="r">Against ${M.cmpName}</th>` : ''}` +
+      `<th>${hist.length}-day range, $ thousand${K.rangeKey('low', 'high', refName)}</th><th>Status</th></tr></thead><tbody>` +
+      rows.map((r) => `<tr data-site="${r.id}"><td class="name">${NAME[r.id]}<span class="share">${r.sh}%</span></td><td class="r" data-v="${Math.round(r.t)}">${usd(r.t)}</td>` +
+        (B ? `<td class="r">${diffTxt('rev', r.t, r.y)}</td>` : '') + `<td>${rgCell(rangeOf((a) => a.site[r.id].t))}</td><td>${status(r.id)}</td></tr>`).join('') + '</tbody>';
+  }
+
+  // ---- data completeness: not filtered; the state of the sources now ----
+  function renderData() {
+    $('dataDef').textContent = 'All stores and payment methods';
+    $('alarms').innerHTML = K.alarms([
+      { level: 'hi', state: 'Disconnected', what: 'harbour till terminal', pre: 'since', at: hm(OFF.since) },
+      { level: 'mid', state: 'Weak signal', what: 'south store card reader', pre: 'last read', at: hm(CUT - 7 * MIN) }]);
+    const CAD = { north: 'Every sale', south: 'Every 5 minutes', harbour: 'Every 5 minutes' };
+    const ST = { harbour: '<span class="state bad">Stopped</span>' };
+    $('srcs').innerHTML = `<thead><tr><th>Source</th><th>Last data</th><th>Sends</th><th>Status</th></tr></thead><tbody>` +
+      IDS.map((id) => `<tr><td>${SHORT[id]}</td><td class="fig-t">${hm(D.last(id))}</td><td>${CAD[id]}</td><td>${ST[id] || 'Running'}</td></tr>`).join('') + '</tbody>';
+    const valid = agg(DAY0, CUT, IDS, null).c, recvd = valid + REJECTED, pct = dec1(REJECTED / recvd * 100);
+    $('rej').innerHTML = `<p class="n"><b>${REJECTED}</b><span>sales rejected today</span></p>` +
+      K.prop({ label: 'Validated', n: valid }, { label: 'Rejected', n: REJECTED, v: pct + '%' },
+        `${REJECTED} of ${num(recvd)} sales received today were rejected, ${pct} percent; revenue covers the ${num(valid)} validated sales only.`);
+  }
+
+  // ---- render ----
+  let UI = null;
+  function syncControls() {
+    UI.sync(S);
+    document.querySelectorAll('#ctl input[name=store]').forEach((i) => { i.checked = i.value === S.store; });
+    document.querySelectorAll('#ctl input[name=pay]').forEach((i) => { i.checked = S.pay.includes(i.value); });
+    document.querySelectorAll('.switch button').forEach((b) => b.setAttribute('aria-pressed', b.dataset.view === S.v));
+    $('chart').hidden = S.v !== 'chart'; $('tbl').hidden = S.v !== 'table';
+  }
+  function render() {
+    M = compute(); C = chartModel();
+    syncControls(); renderTabs(); renderChartHead(); renderTable(); renderLoc();
+    plot.hide(); plot.draw(C);
+    history.replaceState(null, '', hashOf(S));
+  }
+  // a new period starts on its own default step; the other choices carry over
+  function set(patch) { S = { ...S, ...patch }; if ('p' in patch) S.per = ''; S = { ...S, ...P.fix(S) }; $('guard').textContent = ''; render(); }
+
+  $('dateTxt').textContent = dLong(DAY0);
+  $('cutTxt').textContent = hm(CUT);
+  renderData();
+
+  UI = K.periodUI($('ctl'), P, set);
+  $('ctl').addEventListener('change', (e) => {
+    const t = e.target;
+    if (t.name === 'pay') set({ pay: [...document.querySelectorAll('#ctl input[name=pay]:checked')].map((i) => i.value) });
+    else set({ [t.name]: t.value });
+  });
+  K.keepOne($('ctl'), 'pay', $('guard'), 'Keep at least one payment method.');
+  $('ctl').addEventListener('submit', (e) => e.preventDefault());
+  document.querySelectorAll('.metric').forEach((t) => t.addEventListener('click', () => set({ m: t.dataset.m })));
+  K.tablist(document.querySelector('.metrics'), (t) => set({ m: t.dataset.m }));
+  document.querySelectorAll('.switch button').forEach((b) => b.addEventListener('click', () => set({ v: b.dataset.view })));
+  window.addEventListener('hashchange', () => { const n = readHash(); if (hashOf(n) !== hashOf(S)) { S = n; render(); } });
+  render();
+})();
+</script>
+</body>
+</html>

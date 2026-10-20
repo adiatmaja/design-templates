@@ -1,0 +1,71 @@
+/* tokens.css: the newspaper-world design tokens, the one place a colour hex may appear.
+   World: a financial paper's market-data page run by a calm control room (FT Markets Data + ISA-101): grey newsprint,
+   ink, hairlines and ink rules instead of boxes; serif for figures and headings, grotesk for data; colour only for an
+   abnormal state, always with a word. Mockups read these through mockup/kit.css; decks read them directly. */
+
+:root {
+  /* ---------- Colour: paper and ink (contrast on --paper) ---------- */
+  --paper:     #EEEBE4;  /* newsprint grey: the calm ground */
+  --paper-2:   #E3DFD5;  /* hover band, pressed state, a highlighted bar slot */
+  --field:     #F7F5F0;  /* input wells and device screens: a lighter sheet, never a card */
+  --ink:       #161513;  /* text, axes, the current series (15,3:1) */
+  --ink-2:     #45423C;  /* secondary text (8,4:1) */
+  --ink-3:     #5F5B53;  /* labels, tick text (5,7:1) */
+  --rule:      #C6C0B4;  /* hairline between rows, unselected cue */
+
+  /* ---------- Colour: comparison (IBCS: actual dark, comparison grey) ---------- */
+  --cmp:       #8C867B;  /* comparison line and control borders (3,0:1 as a graphic) */
+  --cmp-fill:  #B8B2A6;  /* comparison bars, the rest of a proportion */
+
+  /* ---------- Colour: alarms (ISA-101: only an abnormal state earns colour, always with a word) ---------- */
+  --alarm:     #A3231A;  /* high priority: a source stopped or disconnected (6,3:1) */
+  --warn:      #7A5300;  /* medium priority, as text (5,8:1) */
+  --warn-mark: #C58A00;  /* medium priority, as a shape only */
+
+  /* ---------- Type ---------- */
+  --serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;          /* figures, headings, the flag */
+  --sans:  'Hanken Grotesk', 'Helvetica Neue', Arial, sans-serif;         /* data, labels, controls */
+
+  /* Screen scale (1rem = 16 px, 17 px from 1800 px on html.news). No text below 1rem. */
+  --fs-body: 1rem;       /* data, labels, controls, table cells */
+  --fs-lead: 1.125rem;   /* a time in an alarm line, the short subtitle of a page */
+  --fs-h2: 1.4375rem;    /* block heading, serif */
+  --fs-flag: 1.875rem;   /* the masthead flag, serif */
+  --fs-h1: 2.375rem;     /* page title, serif */
+  --fs-fig-sm: 2.5rem;   /* a secondary figure, serif */
+  --fs-fig: 3rem;        /* headline figure in a metric tab, serif */
+  --lh-fig: 1.05; --lh-head: 1.2; --lh-row: 1.45; --lh-body: 1.55;
+
+  /* Deck scale, px on the fixed 1920 x 1080 canvas (projection in a bright room, forwarded as an image) */
+  --deck-title: 64px;    /* serif, a conclusion of a few words */
+  --deck-sub: 30px;      /* one line under the title */
+  --deck-body: 28px;     /* sans */
+  --deck-label: 22px;    /* axis, source line, scope marker; the floor on a slide */
+  --deck-fig: 132px;     /* the one big serif figure */
+  --deck-pad: 96px;      /* canvas margin */
+
+  /* ---------- Space (4 px base) and rhythm ---------- */
+  --s-1: 0.25rem; --s-2: 0.5rem; --s-3: 0.75rem; --s-4: 1rem;  --s-5: 1.25rem; --s-6: 1.5rem;
+  --s-8: 2rem;    --s-10: 2.5rem; --s-12: 3rem;  --s-16: 4rem; --s-20: 5rem;   --s-24: 6rem;
+  --gap-sub: 0.3125rem;  /* a heading and its subtitle */
+  --gap-head: 0.75rem;   /* a heading block and the table or chart it names */
+  --gap-block: 2rem;     /* blocks stacked in one column */
+  --gap-page: 1.5rem;    /* the control row and the content under it */
+  --row-pad: 0.625rem;   /* table cell, top and bottom, where a cell wraps */
+  --row-h: 2.6875rem;    /* one table row: 43 px plus its hairline */
+
+  /* ---------- Shape: rules, never boxes ---------- */
+  --hair: 1px;           /* between rows */
+  --rule-head: 3px;      /* under the flag, over a block heading, a selected text tab */
+  --rule-sel: 6px;       /* the one reserved mark: the selected metric tab */
+  --r-ctl: 2px;          /* buttons and inputs only */
+
+  /* ---------- Motion: values snap; only a hover or focus cue moves ---------- */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --d-fast: 120ms;
+  --d-base: 240ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --d-fast: 0ms; --d-base: 0ms; }
+}
