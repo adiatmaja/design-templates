@@ -30,8 +30,9 @@ template or the repo root, except links to `guide/`.
    user has not named a template. If the template needs setup (fonts, CDN libraries and versions,
    serve over http), put it under a heading `## Install notes` in that README. Coding agents read
    and apply that section after copying the template.
-7. Add a section for it under "Templates" in the root `README.md`: name, one line on the world, the
-   dashboard and deck previews, and a link to the folder.
+7. Add one row for it to the "Templates" table in the root `README.md`: the folder name as a link, one
+   line on the world and what it fits, and the dashboard and deck previews as linked thumbnails
+   (`<img src="templates/<name>/preview/dashboard.png" width="320" alt="...">`). Keep the column order.
 
 ## Done checklist
 
@@ -41,4 +42,4 @@ template or the repo root, except links to `guide/`.
 - [ ] Every text pair has a measured contrast ratio in `DESIGN.md` (WCAG formula, see `ux-theory.md`).
 - [ ] No client data: names, logos, figures, colours or documents.
 - [ ] Independent review done (not the builder), findings rated 0-4, none left at 3 or 4.
-- [ ] Previews committed and linked from the root `README.md`.
+- [ ] Previews committed and shown in the root `README.md` Templates table.

@@ -1,4 +1,4 @@
-# design-template
+# design-templates
 
 A reusable, project-agnostic design guidance repo for dashboards, POS and app mockups, and client decks
 built as static HTML/CSS/JS (CDN only, no build step). It holds shared guidance, blank starter files
@@ -17,14 +17,11 @@ instead.
 
 ## Templates
 
-### Newspaper
+One row per template. The name is what you tell the agent; click a preview for full size.
 
-A financial-newspaper data page run by a calm control room: paper, ink, rules instead of boxes, colour
-only for abnormal states. Contains the filled contract, the kit API, `kit/` and the example deck and
-dashboard. Folder: [`templates/newspaper/`](templates/newspaper/).
-
-![Newspaper template: dashboard](templates/newspaper/preview/dashboard.png)
-![Newspaper template: deck](templates/newspaper/preview/deck.png)
+| Template | World | Dashboard | Deck |
+|---|---|---|---|
+| [`newspaper`](templates/newspaper/) | Financial-newspaper data page run by a calm control room: paper, ink, rules instead of boxes, colour only for abnormal states. Fits revenue and operations dashboards, POS screens, consulting-style decks. | [<img src="templates/newspaper/preview/dashboard.png" width="320" alt="Newspaper template: dashboard">](templates/newspaper/preview/dashboard.png) | [<img src="templates/newspaper/preview/deck.png" width="320" alt="Newspaper template: deck">](templates/newspaper/preview/deck.png) |
 
 ## Start a new project
 
@@ -54,13 +51,13 @@ stay world-independent.
 | `guide/slides.md` | Deck content rules and deck token sizes |
 | `guide/adding-a-template.md` | Folder shape, steps and done-checklist for a new template |
 | `starter/PRODUCT.md`, `DESIGN.md`, `DECISIONS.md`, `USING.md` | Blank skeletons, independent of any world |
-| `templates/newspaper/DESIGN.md` | The filled contract |
-| `templates/newspaper/USING.md` | Page recipes, do and don't, what to do when the kit lacks a component |
-| `templates/newspaper/README.md` | Kit API |
-| `templates/newspaper/kit/tokens.css`, `base.css`, `styleguide.html` | Tokens, base styles, component sheet |
-| `templates/newspaper/kit/deck/{chartbook.css,chartbook.js,deck.js}` | Deck engine |
-| `templates/newspaper/kit/mockup/{kit.css,kit.js}` | Dashboard and mockup components |
-| `templates/newspaper/examples/deck/`, `examples/dashboard/` | Reference deck and dashboard |
+| `templates/<name>/DESIGN.md` | The filled contract |
+| `templates/<name>/USING.md` | Page recipes, do and don't, what to do when the kit lacks a component |
+| `templates/<name>/README.md` | Kit API and install notes |
+| `templates/<name>/kit/tokens.css`, `base.css`, `styleguide.html` | Tokens, base styles, component sheet |
+| `templates/<name>/kit/deck/` | Deck engine |
+| `templates/<name>/kit/mockup/` | Dashboard and mockup components |
+| `templates/<name>/examples/`, `preview/` | Reference pages and their screenshots |
 | `scripts/click.mjs` | Clicks every control on a page and reports failures |
 | `scripts/shots.mjs` | Screenshots a page across a viewport matrix |
 
