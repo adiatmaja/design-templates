@@ -28,18 +28,9 @@ dashboard. Folder: [`templates/newspaper/`](templates/newspaper/).
 
 ## Add a template
 
-Create `templates/<name>/` with the same shape as `templates/newspaper/`:
-
-```
-DESIGN.md      the filled contract, a worked example of starter/DESIGN.md
-README.md      how to use the kit (API, markup, export)
-kit/           tokens.css, base.css, styleguide.html, mockup/, deck/
-examples/      deck/ and dashboard/ reference pages
-preview/       dashboard.png, deck.png, styleguide.png
-```
-
-Every template ships `preview/*.png`, produced by `scripts/shots.mjs`. Then add a section for it under
-"Templates" above, with its previews. The shared `guide/` and `scripts/` stay world-independent.
+Follow [guide/adding-a-template.md](guide/adding-a-template.md). Each template folder holds `DESIGN.md`,
+`USING.md`, `README.md`, `kit/`, `examples/` and `preview/*.png`; the shared `guide/` and `scripts/`
+stay world-independent.
 
 ## File map
 
@@ -50,8 +41,10 @@ Every template ships `preview/*.png`, produced by `scripts/shots.mjs`. Then add 
 | `guide/visualisation.md` | When to draw a chart, how many, how |
 | `guide/ux-theory.md` | Principles with verified sources, UNVERIFIED list, research method |
 | `guide/slides.md` | Deck content rules and deck token sizes |
-| `starter/PRODUCT.md`, `DESIGN.md`, `DECISIONS.md` | Blank skeletons, independent of any world |
+| `guide/adding-a-template.md` | Folder shape, steps and done-checklist for a new template |
+| `starter/PRODUCT.md`, `DESIGN.md`, `DECISIONS.md`, `USING.md` | Blank skeletons, independent of any world |
 | `templates/newspaper/DESIGN.md` | The filled contract |
+| `templates/newspaper/USING.md` | Page recipes, do and don't, what to do when the kit lacks a component |
 | `templates/newspaper/README.md` | Kit API |
 | `templates/newspaper/kit/tokens.css`, `base.css`, `styleguide.html` | Tokens, base styles, component sheet |
 | `templates/newspaper/kit/deck/{chartbook.css,chartbook.js,deck.js}` | Deck engine |
