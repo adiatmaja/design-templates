@@ -1,11 +1,12 @@
 # DESIGN.md: [project name]
 
-<!-- impeccable:design-schema 1 -->
+Tokens live in one place, `kit/tokens.css`. This file carries no token front matter, because a second
+copy of the values would drift.
 
 [Two or three lines: the name of the visual world, its form reference, where tokens live, where the
 components live, where the reference page lives, and where the decision log is.]
 
-## Direction contract
+## Overview
 
 - **THESIS.** [What the reader learns at a glance, and when colour appears. Good: one sentence naming
   the question the screen answers and the rule for abnormal states.]
@@ -23,7 +24,7 @@ components live, where the reference page lives, and where the decision log is.]
   eyebrows, red for every decrease. Link `guide/anti-ai-design.md`.]
 - **FORM.** [The form reference(s) chosen, and the variant the owner picked.]
 
-## Colour
+## Colors
 
 Strategy: [Restrained | Committed | Full palette | Drenched, and why in one line.]
 
@@ -56,11 +57,21 @@ Good: two faces at most, chosen from the subject and not from the AI default lis
 rem; a floor (no text below 16 px, say); tabular figures in tables and axes; what the root size does
 on wide screens; what is not allowed (tracked caps, eyebrows, one coloured word in a headline).
 
-## Shape, space, rules
+## Layout
 
-Good: the rule weights and what each means (1 px between rows, 3 px under the masthead, 6 px for the
-selected tab), the only places a radius is allowed, "no shadows", the spacing base unit with its rhythm
-tokens, and the table row height.
+Good: the spacing base unit and rhythm tokens, the grid and maximum widths (fluid or fixed), the table
+row height, and the rule weights that separate blocks and what each one means (1 px between rows, 3 px
+under a heading, 6 px for a selected tab).
+
+## Elevation & Depth
+
+Good: how depth is shown, or the statement that it is not (for example: no shadows, the rule replaces
+the box). Name the one lighter or darker surface, if any, and what it is for.
+
+## Shapes
+
+Good: the radius values and the only places a radius is allowed; any other shape rule (icon style,
+mark shapes for status).
 
 ## Components
 
@@ -70,6 +81,11 @@ tokens, and the table row height.
 
 Good: one row per component with its class names and its JS entry point if any. Name the reference page
 that shows them all live. Mention any legacy classes still present and when they are removed.
+
+## Do's and Don'ts
+
+Good: five or six rows specific to this world, each checkable on a screenshot. Detail goes in
+`USING.md`.
 
 ## Charts
 

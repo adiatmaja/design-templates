@@ -1,7 +1,5 @@
 # DESIGN.md: newspaper world
 
-<!-- impeccable:design-schema 1 -->
-
 Visual world for all material of a project (mockups, deck, infographics): **"newspaper market-data
 page"**, the markets-data page of a financial newspaper run by a calm control room (FT Markets Data +
 ISA-101). Tokens live in `kit/tokens.css` (the only place for hex values), mockup components in
@@ -10,7 +8,7 @@ sources are in `guide/ux-theory.md`. Product and audience belong in `PRODUCT.md`
 
 This file is a worked example of a filled `starter/DESIGN.md`.
 
-## Direction contract
+## Overview
 
 - **THESIS.** How much money came in, against what, from where, and whether the data is complete: read
   at a glance, like the exchange-rate page of a morning paper. The screen is grey and calm while
@@ -33,7 +31,7 @@ This file is a worked example of a filled `starter/DESIGN.md`.
 - **FORM.** FT Markets Data + ISA-101 HMI + metric tabs, chosen by the owner from three variants of the
   overview page.
 
-## Colour
+## Colors
 
 Strategy: **Restrained**. Paper and ink carry nearly the whole surface; the comparison is grey (IBCS:
 actual dark, comparison grey); colour is for alarms only, always with a word and a shape.
@@ -69,15 +67,26 @@ both ink); the sign `+` or `-` carries the direction. Categories are told apart 
 - Tabular figures in tables and axes; the big figures in tabs use proportional figures.
 - No tracked capital labels, no eyebrows, no single coloured word in a title.
 
-## Shape, space, rules
+## Layout
 
-- **Rules, not boxes.** `--hair` 1 px between rows; `--rule-head` 3 px under the masthead and above a
-  block title (`h2.ruled`); `--rule-sel` 6 px only for the selected metric tab. Radius `--r-ctl` 2 px
-  only on buttons and inputs. No shadows.
 - Space base 4 px (`--s-1` to `--s-24`); rhythm tokens `--gap-sub`, `--gap-head`, `--gap-block`,
   `--gap-page`; table row `--row-h` 2.6875 rem (43 px).
+- **Rules, not boxes.** `--hair` 1 px between rows; `--rule-head` 3 px under the masthead and above a
+  block title (`h2.ruled`); `--rule-sel` 6 px only for the selected metric tab.
+- Dashboards are fluid; only text pages get a maximum width.
 
-## Components (`kit/mockup/kit.css` + `kit/mockup/kit.js`)
+## Elevation & Depth
+
+None. No shadows, no layers: the ink rule replaces the box. A lighter sheet (`--field`) marks an input
+well or a device screen, never a card.
+
+## Shapes
+
+Radius `--r-ctl` 2 px only on buttons and inputs. Everything else has square corners.
+
+## Components
+
+In `kit/mockup/kit.css` and `kit/mockup/kit.js`.
 
 | Component | Class | Function |
 |---|---|---|
@@ -95,6 +104,15 @@ both ink); the sign `+` or `-` carries the direction. Categories are told apart 
 | Range | `.rg` (`.lo` `.track` `.mk` `.hi` `.out`), key `.rgkey` in the column header | `KIT.rangeBar(r, fmt, sr)`, `KIT.rangeKey(lo, hi, mark)` |
 | Proportion | `.prop` (`.a` `.b` `.track` `i.part`) | `KIT.prop(rest, part, sr)` |
 | Status | `.state`, `.state.bad` (red box + word) | |
+
+## Do's and Don'ts
+
+Full list with replacements in `USING.md`.
+
+- Do separate with rules, colour only abnormal states (with a word), show the comparison in grey, and
+  set figures in serif and data in sans.
+- Don't use cards, shadows, gradients, pill chips, donuts or gauges, count-up, tracked capitals, or
+  explanatory prose on screen.
 
 ## Charts
 

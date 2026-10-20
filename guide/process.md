@@ -8,7 +8,7 @@ From a blank folder to a verified design. Each step produces a file or a decisio
 | 2 | Product context | `PRODUCT.md` (from `starter/PRODUCT.md`) | Users, scene, constraints and brand commitments are written down; unknowns are marked, not invented |
 | 3 | Research | Notes with date and URL per fact (see `ux-theory.md`, research method) | Every claim that shapes the design has a source or is marked UNVERIFIED |
 | 4 | Pick a visual world | Two or three variants of one real screen, side by side | The user has chosen one; the choice and the rejected variants are logged |
-| 5 | Design contract | `DESIGN.md` (from `starter/DESIGN.md`) | THESIS, OWN-WORLD, STORY, FIRST VIEWPORT, NO PROSE, ANTI-AI and FORM are filled |
+| 5 | Design contract | `DESIGN.md` (from `starter/DESIGN.md`) | The eight standard sections are filled in order (Overview with the direction contract, Colors, Typography, Layout, Elevation & Depth, Shapes, Components, Do's and Don'ts), then the extra sections |
 | 6 | Tokens | the template's `kit/tokens.css` | Every hex lives here and only here; contrast measured, not guessed |
 | 7 | Kit | The template's `kit/` folder (base styles, mockup and deck components, styleguide) | The styleguide shows every component in every state |
 | 8 | Pages or deck | One reference page first, then the rest | The reference page passes step 9 before others are built from it |
