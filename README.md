@@ -5,6 +5,16 @@ built as static HTML/CSS/JS (CDN only, no build step). It holds shared guidance,
 and one or more ready-made design templates (a visual world plus a working kit). Copy what you need
 into a new project.
 
+## Use it with a coding agent
+
+Give your agent this sentence, in the project you want styled:
+
+> Set up the newspaper design template from github.com/adiatmaja/design-templates.
+
+The agent follows [AGENTS.md](AGENTS.md): it clones the repo to a temp dir, copies the template into
+`design/`, wires your agent instructions, adapts tokens, and verifies. Name another template to use it
+instead.
+
 ## Templates
 
 ### Newspaper
@@ -36,6 +46,7 @@ stay world-independent.
 
 | Path | Purpose |
 |---|---|
+| `AGENTS.md` | Exact install procedure for coding agents; rules for editing this repo |
 | `guide/process.md` | Brief to verified design, ten steps |
 | `guide/anti-ai-design.md` | Rules against AI-looking design, banned tells, verification |
 | `guide/visualisation.md` | When to draw a chart, how many, how |

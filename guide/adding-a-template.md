@@ -8,7 +8,7 @@ A template is a visual world plus a working kit, in one self-contained folder.
 templates/<name>/
   DESIGN.md      filled contract, a worked example of starter/DESIGN.md
   USING.md       how to design with this world (from starter/USING.md)
-  README.md      kit API: classes, functions, slide markup, export
+  README.md      kit API: classes, functions, slide markup, export; optional ## Install notes
   kit/           tokens.css (the only place for hex), base.css, styleguide.html, mockup/, deck/
   examples/      deck/ and dashboard/ reference pages
   preview/       dashboard.png, deck.png, styleguide.png
@@ -26,7 +26,11 @@ template or the repo root, except links to `guide/`.
 3. Build the reference dashboard and deck in `examples/` from the kit alone.
 4. Write `README.md` (API) and `USING.md` (recipes, do and don't, gaps).
 5. Generate previews with `scripts/shots.mjs` into `preview/`.
-6. Add a section for it under "Templates" in the root `README.md`: name, one line on the world, the
+6. The first line of `README.md` is a one-line description of the world; `AGENTS.md` shows it when a
+   user has not named a template. If the template needs setup (fonts, CDN libraries and versions,
+   serve over http), put it under a heading `## Install notes` in that README. Coding agents read
+   and apply that section after copying the template.
+7. Add a section for it under "Templates" in the root `README.md`: name, one line on the world, the
    dashboard and deck previews, and a link to the folder.
 
 ## Done checklist
