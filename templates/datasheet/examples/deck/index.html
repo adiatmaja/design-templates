@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Project A deck - datasheet example</title>
+  <link rel="stylesheet" href="../../kit/tokens.css">
+  <link rel="stylesheet" href="../../kit/base.css">
+  <link rel="stylesheet" href="../../kit/mockup/kit.css">
+  <link rel="stylesheet" href="../../kit/deck/sheet.css">
+</head>
+<body>
+  <div class="deck-viewport" id="deck-viewport">
+    <div class="deck-frame" id="deck-frame" role="region" aria-label="Project A deck"></div>
+  </div>
+  <p class="deck-rotate">Slides are larger in landscape.</p>
+  <div class="deck-hud" role="toolbar" aria-label="Presentation controls">
+    <button id="btn-prev" type="button" aria-label="Previous slide">Previous</button>
+    <span class="counter" id="deck-counter">1 / 1</span>
+    <button id="btn-next" type="button" aria-label="Next slide">Next</button>
+    <button id="btn-toc" type="button" aria-expanded="false" aria-controls="deck-toc">Contents<span class="key-hint">&nbsp;(D)</span></button>
+    <button id="btn-notes" type="button">Notes<span class="key-hint">&nbsp;(N)</span></button>
+    <button id="btn-presenter" type="button">Presenter<span class="key-hint">&nbsp;(P)</span></button>
+    <button id="btn-export" type="button">Export PPTX<span class="key-hint">&nbsp;(E)</span></button>
+  </div>
+  <nav class="deck-toc" id="deck-toc" aria-label="Contents">
+    <h2>Contents</h2>
+    <ol id="deck-toc-list"></ol>
+  </nav>
+  <aside class="deck-notes" id="deck-notes" aria-live="polite">
+    <h2>Speaker notes</h2>
+    <div id="deck-notes-body"></div>
+  </aside>
+  <div class="deck-toast" id="deck-toast" role="status"></div>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js" defer></script>
+  <script src="../../kit/mockup/kit.js"></script>
+  <script src="../dashboard/data.js"></script>
+  <script src="../../kit/deck/sheet.js"></script>
+  <script src="slides.js"></script>
+  <script src="../../kit/deck/deck.js"></script>
+</body>
+</html>
