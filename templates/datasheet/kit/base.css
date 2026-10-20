@@ -1,0 +1,127 @@
+/* base.css: reset, type and the control family of the datasheet world. Import after tokens.css.
+   Pages add mockup/kit.css for the drawing, the dock, tables and charts; decks use deck/sheet.css.
+   Every control here is one family: the same height (--ctl-h), border (--edge), radius (--r-ctl), type, focus ring and
+   state set. A state is reachable two ways, the real one (:hover, :focus-visible, :checked, aria-*) and an .is-* hook
+   the style guide uses to show that state at rest. */
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+/* ---------- Reset ---------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  font-family: var(--sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--ink);
+  background: var(--sheet);
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+img, video { display: block; max-width: 100%; }
+svg { display: block; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; background: none; border: 0; text-align: inherit; }
+a { color: var(--mark); text-decoration-thickness: var(--hair); text-underline-offset: 0.2em; }
+a:hover { text-decoration-thickness: 2px; }
+table { border-collapse: collapse; width: 100%; }
+h1, h2, h3 { font-weight: var(--w-bold); line-height: var(--lh-head); text-wrap: balance; }
+h1 { font-family: var(--cond); font-size: var(--fs-h1); }
+h2 { font-size: var(--fs-h2); }
+h3 { font-size: var(--fs-body); }
+p { text-wrap: pretty; }
+ul, ol { list-style: none; }
+code, kbd, .mono { font-family: var(--mono); font-size: 0.9375em; }
+
+/* ---------- Browser surfaces ---------- */
+::selection { background: var(--tint); color: var(--ink); }
+:focus-visible { outline: 2px solid var(--mark); outline-offset: 2px; }
+* { scrollbar-width: thin; scrollbar-color: var(--edge) transparent; }
+input { caret-color: var(--mark); }
+
+/* ---------- Type roles (one style per role; DESIGN.md "Typography") ---------- */
+.meta { font-size: var(--fs-meta); color: var(--ink-3); }
+.muted { color: var(--ink-2); }
+.unit { font-size: var(--fs-meta); color: var(--ink-3); font-weight: var(--w-reg); }
+.fig { font-family: var(--cond); font-size: var(--fs-fig); font-weight: var(--w-bold); line-height: var(--lh-fig); letter-spacing: -0.01em; }
+.fig-lg { font-family: var(--cond); font-size: var(--fs-fig-lg); font-weight: var(--w-bold); line-height: var(--lh-fig); letter-spacing: -0.015em; }
+.prose { max-width: var(--measure); }
+
+/* ---------- The control family ---------- */
+.btn, .input, .select, .seg > * {
+  min-height: var(--ctl-h);
+  border: var(--hair) solid var(--edge);
+  border-radius: var(--r-ctl);
+  font-size: var(--fs-body);
+  line-height: 1.25;
+  transition: background-color var(--d-fast) var(--ease), border-color var(--d-fast) var(--ease), color var(--d-fast) var(--ease);
+}
+
+/* Buttons: secondary (default), primary (one per view), ghost (a quiet action in a row), danger (the one destructive commit) */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--s-2); padding: 0 var(--s-4); background: var(--sheet); color: var(--ink); font-weight: var(--w-med); white-space: nowrap; }
+.btn:hover, .btn.is-hover { background: var(--sheet-2); border-color: var(--ink-3); }
+.btn:focus-visible, .btn.is-focus { outline: 2px solid var(--mark); outline-offset: 2px; }
+.btn[aria-pressed="true"], .btn.is-on { background: var(--tint); border-color: var(--mark); color: var(--mark); }
+.btn.primary { background: var(--mark); border-color: var(--mark); color: var(--sheet); }
+.btn.primary:hover, .btn.primary.is-hover { background: var(--ink); border-color: var(--ink); }
+.btn.ghost { border-color: transparent; background: transparent; color: var(--ink-2); }
+.btn.ghost:hover, .btn.ghost.is-hover { background: var(--sheet-2); color: var(--ink); }
+.btn.ghost[aria-pressed="true"], .btn.ghost.is-on { background: var(--tint); color: var(--mark); }
+.btn.danger { background: var(--fault); border-color: var(--fault); color: var(--sheet); }
+.btn.danger:hover, .btn.danger.is-hover { background: var(--ink); border-color: var(--ink); }
+/* disabled keeps a measured ink (never opacity): the label stays readable and says why beside it */
+.btn:disabled, .btn[aria-disabled="true"], .btn.is-disabled { background: var(--sheet-2); border-color: var(--rule); color: var(--ink-3); cursor: not-allowed; }
+
+/* Text and number inputs; .input-unit puts the unit inside the field, after the value */
+.input { width: 100%; padding: 0 var(--s-3); background: var(--sheet); }
+.input::placeholder { color: var(--ink-3); }
+.input:hover, .input.is-hover { border-color: var(--ink-3); }
+.input:focus-visible, .input.is-focus { outline: 2px solid var(--mark); outline-offset: -1px; border-color: var(--mark); }
+.input:disabled, .input.is-disabled { background: var(--sheet-2); border-color: var(--rule); color: var(--ink-3); cursor: not-allowed; }
+.input[aria-invalid="true"], .input.is-error { border-color: var(--fault); box-shadow: inset 0 0 0 1px var(--fault); }
+.input.is-on { border-color: var(--mark); background: var(--tint); }
+.input-unit { position: relative; display: flex; align-items: center; }
+.input-unit .input { padding-right: 2.75rem; text-align: right; font-variant-numeric: tabular-nums; }
+.input-unit .unit { position: absolute; right: var(--s-3); pointer-events: none; }
+
+/* Select: the chevron is drawn from borders in currentColor, so it carries no colour value of its own */
+.select-wrap { position: relative; display: block; }
+.select { width: 100%; appearance: none; -webkit-appearance: none; padding: 0 var(--s-10) 0 var(--s-3); background: var(--sheet); cursor: pointer; }
+.select-wrap::after { content: ''; position: absolute; right: var(--s-4); top: 50%; width: 0.5rem; height: 0.5rem; margin-top: -0.375rem; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); pointer-events: none; color: var(--ink-2); }
+.select:hover, .select.is-hover { border-color: var(--ink-3); }
+.select:focus-visible, .select.is-focus { outline: 2px solid var(--mark); outline-offset: -1px; border-color: var(--mark); }
+.select:disabled, .select.is-disabled { background: var(--sheet-2); border-color: var(--rule); color: var(--ink-3); cursor: not-allowed; }
+.select[aria-invalid="true"], .select.is-error { border-color: var(--fault); box-shadow: inset 0 0 0 1px var(--fault); }
+.select.is-on { border-color: var(--mark); background: var(--tint); }
+
+/* Segmented control: two to four exclusive views (Chart / Table). Members share one border; the pressed one carries the mark */
+.seg { display: inline-flex; }
+.seg > * { display: inline-flex; align-items: center; padding: 0 var(--s-4); background: var(--sheet); color: var(--ink-2); font-weight: var(--w-med); }
+.seg > * + button { margin-left: -1px; }
+.seg > *:first-child { border-radius: var(--r-ctl) 0 0 var(--r-ctl); }
+.seg > *:last-child { border-radius: 0 var(--r-ctl) var(--r-ctl) 0; }
+.seg > *:hover, .seg > *.is-hover { background: var(--sheet-2); color: var(--ink); }
+.seg > *:focus-visible, .seg > *.is-focus { position: relative; z-index: 2; outline: 2px solid var(--mark); outline-offset: 2px; }
+.seg > *[aria-pressed="true"], .seg > *.is-on { position: relative; z-index: 1; background: var(--tint); border-color: var(--mark); color: var(--mark); }
+.seg > *:disabled, .seg > *.is-disabled { background: var(--sheet-2); color: var(--ink-3); cursor: not-allowed; }
+
+/* Checkbox: a 20 px box inside a 40 px row; the label is the hit area */
+.check { position: relative; display: inline-flex; align-items: center; gap: var(--s-2); min-height: var(--ctl-h); cursor: pointer; color: var(--ink); }
+/* the real input covers the whole label, transparent, so a click anywhere on the row toggles it */
+.check input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: inherit; }
+.check .box { position: relative; flex: none; width: 1.25rem; height: 1.25rem; border: var(--hair) solid var(--edge); border-radius: var(--r-ctl); background: var(--sheet); transition: background-color var(--d-fast) var(--ease), border-color var(--d-fast) var(--ease); }
+.check:hover .box, .check.is-hover .box { border-color: var(--ink-3); background: var(--sheet-2); }
+.check input:focus-visible + .box, .check.is-focus .box { outline: 2px solid var(--mark); outline-offset: 2px; }
+.check input:checked + .box, .check.is-on .box { background: var(--mark); border-color: var(--mark); }
+.check input:checked + .box::after, .check.is-on .box::after { content: ''; position: absolute; left: 0.375rem; top: 0.125rem; width: 0.375rem; height: 0.6875rem; border-right: 2px solid var(--sheet); border-bottom: 2px solid var(--sheet); transform: rotate(45deg); }
+.check:has(input:disabled), .check.is-disabled { color: var(--ink-3); cursor: not-allowed; }
+.check input:disabled + .box, .check.is-disabled .box { background: var(--sheet-2); border-color: var(--rule); }
+.check.is-error .box, .check input[aria-invalid="true"] + .box { border-color: var(--fault); box-shadow: inset 0 0 0 1px var(--fault); }
+
+/* A field: label over control, then one hint or one error line (never both saying the same thing) */
+.field { display: grid; gap: var(--s-2); }
+.field > label, .field > .label { font-weight: var(--w-med); }
+.field .hint { font-size: var(--fs-meta); color: var(--ink-3); }
+.field .error { font-size: var(--fs-meta); color: var(--fault-ink); font-weight: var(--w-bold); }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }

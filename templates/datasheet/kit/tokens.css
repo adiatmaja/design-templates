@@ -1,0 +1,157 @@
+/* tokens.css: the datasheet-world design tokens, the one place a colour hex may appear.
+   World: an engineering datasheet beside the drawing it describes (Swiss International Style on an IBM Carbon 2x grid): a white
+   sheet, Plex Sans Condensed for the title-block voice (page title, headline figures, title block), Plex Sans for running
+   text, Plex Mono only for machine strings, ruled tables in place of boxes, one mark for "active", and status as a fill / ink / tint triplet that always travels with a word and a shape.
+   Three palettes share these roles: Drafting (the default, on :root), Whiteprint and Vellum, each chosen with
+   <html data-palette="..."> (../README.md, "Palettes"). A palette redefines only the sheet, ink, mark and grey roles; status, type, space and
+   shape stay shared, so no component changes. Every pair was measured with the WCAG formula in every palette; the
+   ratios are in ../DESIGN.md. */
+
+/* Colour. Drafting is the default palette: plotter ink on white bond, the look of a printed datasheet. The attribute
+   selectors let any element carry a palette, which is how the styleguide sets the three side by side. */
+:root,
+[data-palette="drafting"] {
+  /* ---------- Colour: the sheet and its ink (contrast on --sheet) ---------- */
+  --sheet:      #FFFFFF;  /* the ground of every page and slide */
+  --sheet-2:    #F2F4F6;  /* the one recessed field: the canvas around the drawing, a hovered row, the dock tab strip */
+  --ink:        #13171D;  /* text, figures, the drawing's frame and line work (18.0:1) */
+  --ink-2:      #3A4350;  /* secondary text (10.0:1) */
+  --ink-3:      #56606D;  /* units, axis ticks, source lines; the quietest text (6.4:1) */
+  --rule:       #D3D8DE;  /* hairline between table rows; never a control boundary */
+  --edge:       #7D8794;  /* every visible edge of a control (3.6:1, WCAG 1.4.11) */
+  --grid:       #C9CFD6;  /* the drawing's grid on the sheet (a visibility floor of 1.3:1, not a WCAG pair) */
+  --grid-dash:  none;     /* the grid's line: plotted solid on drafting film */
+
+  /* ---------- Colour: the one active mark (selection, focus, primary action, the measured series) ---------- */
+  --mark:       #1C4597;  /* ink blue (9.0:1): selected tab, focus ring, primary button, the series being read */
+  --mark-2:     #6181BE;  /* the mark's lighter step: critical bars on the drawing, a second-rank bar (3.9:1, never text) */
+  --tint:       #E9EEF8;  /* the ground of a selected row, in a table or on the drawing; text on it stays ink */
+
+  /* ---------- Colour: comparison, the range track and the tolerance band (grey, never a hue) ---------- */
+  --cmp:        #878F9A;  /* comparison line, reference tick (3.3:1 as a mark) */
+  --cmp-fill:   #C2C8CF;  /* comparison bars */
+  --track:      #E8EBEE;  /* the axis of a range */
+  --band:       #BCC3CB;  /* an estimate plus or minus its tolerance, on a range */
+
+  /* ---------- Colour: status triplets. fill = a mark or rule; ink = the word; tint = a row or region ground ---------- */
+  --pass:         #2F8A5B;  /* fill only (4.3:1) */
+  --pass-ink:     #1C6641;  /* the word "pass" (6.9:1) */
+  --pass-tint:    #E6F2EB;
+  --caution:      #DCA312;  /* fill only (2.2:1): always ringed or worded */
+  --caution-ink:  #755000;  /* the word "caution" (7.2:1) */
+  --caution-tint: #FBF1D6;
+  --fault:        #B42A20;  /* fill, rule and the danger button's ground (6.4:1) */
+  --fault-ink:    #A3251C;  /* the word "fault" (7.4:1) */
+  --fault-tint:   #FAE8E6;
+
+  /* ---------- Elevation: only what floats (popover, readout) ---------- */
+  --lift: 0 0 0 1px rgba(19, 23, 29, 0.10), 0 4px 16px rgba(19, 23, 29, 0.14);
+
+}
+
+/* ---------- Palettes: the same roles drawn from a different drawing office ---------- */
+
+/* Whiteprint: a diazo print, the copy handed to the people who work from a drawing. The sheet keeps the faint lilac cast of the coated
+   paper, the line work itself is blue-violet (no black anywhere), hairlines and grid are the same dye thinned, and
+   the grid reproduces as a broken line. The mark is the dye at full strength: redder and brighter than the line work. */
+[data-palette="whiteprint"] {
+  --sheet:      #F1EFF8;
+  --sheet-2:    #E3E0F0;
+  --ink:        #1E1950;  /* blue-violet line work: text, figures, outlines */
+  --ink-2:      #3A3479;
+  --ink-3:      #4F4A8A;
+  --rule:       #C8C3E3;
+  --edge:       #6E68A8;
+  --grid:       #ADA6D6;
+  --grid-dash:  5 3;      /* the grid reproduced as a broken line */
+  --mark:       #6A1FA8;  /* full-strength diazo violet: selected tab, focus ring, primary button */
+  --mark-2:     #9064C9;
+  --tint:       #E5D9F4;
+  --cmp:        #847EAE;
+  --cmp-fill:   #C1BCDD;
+  --track:      #E0DDEE;
+  --band:       #B3ADD5;
+  --lift: 0 0 0 1px rgba(36, 31, 92, 0.12), 0 4px 16px rgba(36, 31, 92, 0.16);
+}
+
+/* Vellum: graphite on warm tracing vellum laid over a dot-grid underlay. The sheet is cream and slightly translucent,
+   so the recessed field is the backing board showing through; the ink is soft graphite, the grid a dotted pencil
+   underlay, and the one mark is Prussian blue, the pigment of the cyanotype blueprint traced from it. */
+[data-palette="vellum"] {
+  --sheet:      #F5F1E4;
+  --sheet-2:    #E9E2CD;
+  --ink:        #2A2722;  /* soft graphite */
+  --ink-2:      #47433B;
+  --ink-3:      #5A554A;
+  --rule:       #D5CCB3;
+  --edge:       #7F7764;
+  --grid:       #A89C7C;
+  --grid-dash:  1 4;      /* a dotted pencil underlay seen through the sheet */
+  --mark:       #1A5570;  /* Prussian blue: selected tab, focus ring, primary button */
+  --mark-2:     #4E8299;
+  --tint:       #DCE5E3;
+  --cmp:        #877F6D;
+  --cmp-fill:   #C8BEA4;
+  --track:      #E4DCC6;
+  --band:       #BDB08E;
+  --lift: 0 0 0 1px rgba(42, 39, 34, 0.12), 0 4px 16px rgba(42, 39, 34, 0.16);
+}
+
+:root {
+  /* ---------- Type ---------- */
+  --sans: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;     /* running text, labels, table figures */
+  --cond: 'IBM Plex Sans Condensed', 'Arial Narrow', sans-serif;     /* the drawing's title-block voice: page title, headline figures, title block */
+  --mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;  /* identifiers, axis values, dimensions, source marks */
+
+  /* Screen scale, a 1.25 ladder above the body (1rem = 16 px; 17 px from 2200 px on html.sheet).
+     --fs-meta is the floor: no text on a screen is smaller than 14 px. */
+  --fs-meta: 0.875rem;    /* 14: units, axis ticks, source lines, the sample-data stamp */
+  --fs-body: 1rem;        /* 16: values, labels, controls, table cells */
+  --fs-h2: 1.25rem;       /* 20: block heading */
+  --fs-h1: 1.5625rem;     /* 25: page title */
+  --fs-fig: 2rem;         /* 32: the figure a block publishes */
+  --fs-fig-lg: 2.5rem;    /* 40: the one headline figure of a view */
+  --lh-fig: 1.05; --lh-head: 1.2; --lh-row: 1.4; --lh-body: 1.5;
+  --w-reg: 400; --w-med: 500; --w-bold: 600;
+
+  /* Deck scale, px on the fixed 1920 x 1080 canvas */
+  --deck-cover: 96px;     /* the cover's conclusion */
+  --deck-title: 60px;     /* the conclusion, one sentence */
+  --deck-sub: 30px;       /* one line under the title */
+  --deck-body: 28px;      /* table cells, asks */
+  --deck-label: 22px;     /* axis, source line, title block; the floor on a slide */
+  --deck-fig: 132px;      /* the one big figure */
+  --deck-pad: 96px;       /* canvas margin */
+
+  /* ---------- Space: the Carbon 2x grid, 8 px unit (4 px half step); no 20 px rung ---------- */
+  --s-1: 0.25rem; --s-2: 0.5rem; --s-3: 0.75rem; --s-4: 1rem; --s-6: 1.5rem;
+  --s-8: 2rem; --s-10: 2.5rem; --s-12: 3rem; --s-16: 4rem;
+  --gap-in: 0.75rem;      /* inside a group: a heading and its line, a label and its control */
+  --gap-group: 1.5rem;    /* between groups inside a block */
+  --gap-block: 2.5rem;    /* between blocks */
+  --row: 2.5rem;          /* a table row, Carbon md (40 px) */
+  --ctl-h: 2.5rem;        /* every control in a family: button, input, select, segment */
+  --tab-h: 3rem;          /* a dock tab */
+  --dock-w: clamp(22.5rem, 32vw, 36rem);  /* the right dock: a third of the page, 360 to 576 px */
+  --measure: 68ch;        /* text blocks only, never a container */
+
+  /* ---------- Shape: rules, never boxes ---------- */
+  --hair: 1px;            /* between rows */
+  --rule-strong: 2px;     /* under a table head, over a block */
+  --rule-sel: 3px;        /* the active mark: the selected tab's underline */
+  --r-ctl: 2px;           /* controls only; everything else is square */
+
+  /* ---------- Motion: values snap; only hover and focus cues move (Carbon productive curve) ---------- */
+  --ease: cubic-bezier(0.2, 0, 0.38, 0.9);
+  --d-fast: 110ms;
+  --d-base: 240ms;
+}
+
+/* a touch screen gets the 48 px target on every control */
+@media (pointer: coarse) {
+  :root { --ctl-h: 3rem; --row: 3rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --d-fast: 0ms; --d-base: 0ms; }
+}
