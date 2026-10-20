@@ -3,6 +3,15 @@
 How to design with this world. Class names and functions are in `README.md`; the contract is in
 `DESIGN.md`; live components are in `kit/styleguide.html`.
 
+## Component catalog
+
+One row per component the kit offers. Good: every row names the class or function and the example file
+that shows it, so an agent can find a working use before writing new markup.
+
+| Component | Class / function | Used in |
+|---|---|---|
+| [Component] | [Class or function] | [`examples/...` file, or "not used in examples"] |
+
 ## Page recipes
 
 Each recipe lists the blocks in order, what the first viewport holds, and which component answers which

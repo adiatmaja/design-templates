@@ -3,6 +3,30 @@
 How to design with this world. Class names and functions are in `README.md` (kit API); the full
 contract is in `DESIGN.md`; live components are in `kit/styleguide.html`.
 
+## Component catalog
+
+Paths are under `examples/`. Where the examples do not use a component, the cell says so.
+
+| Component | Class / function | Used in |
+|---|---|---|
+| Page, masthead, brand | `html.news`, `.page`, `.mast`, `a.brand`, `.meta` | `dashboard/index.html` |
+| Sample-data stamp | `.sim` | `dashboard/index.html` |
+| Section row | `nav.sections` (`aria-current`) | `dashboard/index.html` |
+| Title | `.title h1` | `dashboard/index.html` |
+| Filters | `form.controls` > `fieldset` > `legend`; `KIT.keepOne`, `KIT.period`, `KIT.periodUI` | `dashboard/index.html` |
+| Text tab, checkbox | `label.pick`, `label.tick` | `dashboard/index.html` |
+| Metric tabs | `.metrics` > `button.metric` (`.lbl` `.val` `.chg`); `KIT.tablist` | `dashboard/index.html` |
+| Block head, switch, key | `.head`, `.switch`, `p.sub`, `.legend` | `dashboard/index.html` |
+| Ruled heading | `h2.ruled` | `dashboard/index.html` |
+| Chart and readout | `div.plot`, `.readout`; `KIT.plot` | `dashboard/index.html` |
+| Table | `table.table`, `.tblwrap`, `.fig-t` | `dashboard/index.html` |
+| Alarm list | `ol.alarms`; `KIT.alarms` | `dashboard/index.html` |
+| Status | `.state`, `.state.bad` | `dashboard/index.html` |
+| Range bar | `.rg`; `KIT.rangeBar`, `KIT.rangeKey` | `dashboard/index.html` |
+| Proportion bar | `.prop`; `KIT.prop` | `dashboard/index.html` |
+| Deck slides | `DECK_SLIDES` types `cover`, `exhibit`, `statement`, `close` | `deck/slides.js` |
+| Buttons, inputs, popover | `.btn`, `.btn-primary`, `.input`, `.pop` | not used in the examples; see `kit/styleguide.html` |
+
 ## Page recipes
 
 Every page answers one question in its first viewport. Compose from the kit in this order and add
