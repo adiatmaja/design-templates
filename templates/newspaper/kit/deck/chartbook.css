@@ -1,0 +1,256 @@
+/* chartbook.css: the deck engine stylesheet, in the newspaper world (../../DESIGN.md).
+   A slide is a chart page from a financial paper: a running head over a 3 px ink rule, an action title in serif that
+   states the finding, one chart or diagram, a one-line source. Newsprint ground, ink, hairlines; colour only for an
+   alarm (with a word). Every colour comes from tokens.css (the one place a hex may appear).
+   Canvas is 1920x1080 (deck.js scales it); sizes are px at that width, never under 20 px on a slide.
+   Templates and chart builders: chartbook.js. */
+
+@import url('../tokens.css');
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400..800&family=Source+Serif+4:opsz,wght@8..60,400..700&display=swap');
+
+:root {
+  --hud-h: 64px;  /* the control strip under the slide; deck.js fits the slide into the space above it */
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; background: var(--ink); }
+body { font-family: var(--sans); color: var(--ink); -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums lining-nums; }
+button { font: inherit; background: none; border: 0; cursor: pointer; }
+ol, ul { list-style: none; }
+img { display: block; max-width: 100%; }
+svg text { font-family: var(--sans); }
+::selection { background: var(--ink); color: var(--paper); }
+
+/* ---------- Viewport + frame ---------- */
+.deck-viewport { position: fixed; inset: 0 0 var(--hud-h) 0; display: grid; place-items: center; }
+.deck-frame { width: 1920px; height: 1080px; position: absolute; left: 50%; top: 50%; overflow: hidden; background: var(--paper); transform: translate(-50%, -50%) scale(var(--frame-scale, 1)); transform-origin: center; font-size: var(--deck-body); line-height: 1.4; }
+
+/* ---------- Slide: values snap, the slide changes without a fade ---------- */
+.slide { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 64px var(--deck-pad) 0; background: var(--paper); visibility: hidden; }
+.slide.active { visibility: visible; }
+
+/* ---------- Exhibit: running head, action title, figure, source, folio ---------- */
+.ex-mast { display: flex; align-items: baseline; gap: 28px; padding-bottom: 14px; border-bottom: var(--rule-head) solid var(--ink); min-height: 56px; }
+.ex-mast .flag { font-family: var(--serif); font-size: 32px; font-weight: 700; letter-spacing: -0.01em; line-height: 1; }
+.ex-kicker { font-size: var(--deck-label); color: var(--ink-2); }
+.ex-kicker i { font-style: italic; }
+.ex-title { font-family: var(--serif); font-size: var(--deck-title); line-height: 1.1; font-weight: 600; letter-spacing: -0.012em; max-width: 1600px; margin-top: 36px; text-wrap: balance; }
+.ex-sub { font-size: var(--deck-sub); line-height: 1.3; color: var(--ink-2); max-width: 1500px; margin-top: 14px; }
+.ex-sub b, .slide-close .asks li span b { font-weight: 700; color: var(--ink); }
+.ex-figure { flex: 1; min-height: 0; margin-top: 40px; display: flex; flex-direction: column; justify-content: center; }
+.ex-figure > svg { display: block; }
+.ex-source { font-size: var(--deck-label); line-height: 1.4; color: var(--ink-3); max-width: 1500px; margin-top: 20px; }
+.ex-source b { font-weight: 600; color: var(--ink-2); }
+.ex-foot { height: 72px; flex: none; display: flex; align-items: center; justify-content: flex-end; gap: 24px; font-size: var(--deck-label); color: var(--ink-3); border-top: var(--hair) solid var(--rule); margin-top: 20px; }
+.ex-foot .pg { font-variant-numeric: tabular-nums; }
+
+/* Key above a chart: the line or mark drawn, then its word (kit .legend) */
+.key { display: flex; flex-wrap: wrap; gap: 8px 40px; font-size: var(--deck-label); color: var(--ink-2); margin-bottom: 28px; }
+.key span { display: inline-flex; align-items: center; gap: 14px; }
+.key i { display: inline-block; width: 44px; height: 0; border-top: 5px solid var(--ink); }
+.key i.later { border-top: 3px dashed var(--cmp); }
+.key i.cmp { border-top: 3px solid var(--cmp); }
+.key i.dot { width: 20px; height: 20px; border: 0; border-radius: 50%; background: var(--ink); }
+.key i.ring { width: 20px; height: 20px; border: 3px solid var(--cmp); border-radius: 50%; }
+.key i.x { width: 20px; height: 20px; border: 0; position: relative; }
+.key i.x::before, .key i.x::after { content: ''; position: absolute; left: -2px; right: -2px; top: 8px; border-top: 3px solid var(--alarm); transform: rotate(45deg); }
+.key i.x::after { transform: rotate(-45deg); }
+
+/* Chart vocabulary shared by the SVG builders */
+.lbl { font-size: 24px; fill: var(--ink-2); }
+.lbl-s { font-size: var(--deck-label); fill: var(--ink-3); }
+.lbl-b { font-size: 26px; font-weight: 600; fill: var(--ink); }
+.lbl-blue { fill: var(--ink); font-weight: 600; }
+.lbl-red { fill: var(--alarm); font-weight: 600; }
+.lbl-serif { font-family: var(--serif); font-weight: 600; fill: var(--ink); }
+.grid line, line.grid { stroke: var(--rule); stroke-width: 1; }
+/* .draw .grow .flow are kept as hooks for older figures; values snap, so nothing animates */
+.deck-frame.exporting { left: 0; top: 0; transform: none; }
+
+/* ---------- Cover: a front page. Flag row over a heavy rule, the headline, the date, the sender ---------- */
+.slide-cover { padding: 64px var(--deck-pad) 72px; }
+.cover-mast { display: flex; align-items: flex-end; justify-content: space-between; gap: 48px; padding-bottom: 24px; border-bottom: var(--rule-sel) solid var(--ink); }
+.cover-lead { font-size: var(--deck-sub); color: var(--ink-2); }
+.cover-lead b { display: block; font-family: var(--serif); font-size: 56px; font-weight: 700; line-height: 1; color: var(--ink); margin-bottom: 14px; letter-spacing: -0.01em; }
+.cover-mast .client { height: 96px; width: auto; }
+.cover-title { font-family: var(--serif); font-size: var(--deck-fig); line-height: 1.02; font-weight: 600; letter-spacing: -0.02em; max-width: 1400px; margin-top: auto; text-wrap: balance; }
+.cover-meta { font-size: var(--deck-sub); color: var(--ink-2); margin-top: 40px; padding-bottom: 72px; }
+.cover-foot { display: flex; align-items: center; padding-top: 28px; border-top: var(--hair) solid var(--rule); min-height: 120px; }
+.cover-foot:empty { border-top: 0; }
+.cover-foot .from { width: 300px; height: auto; }
+
+/* ---------- Divider and statement: one serif line under a heavy rule ---------- */
+.slide-divider, .slide-statement { justify-content: center; padding-bottom: 100px; }
+.slide-divider .part { font-size: var(--deck-sub); color: var(--ink-2); padding-top: 20px; border-top: var(--rule-sel) solid var(--ink); max-width: 1400px; }
+.slide-divider h1 { font-family: var(--serif); font-size: 96px; line-height: 1.04; font-weight: 600; letter-spacing: -0.02em; margin-top: 24px; max-width: 1400px; }
+.slide-statement h1 { font-family: var(--serif); font-size: 72px; line-height: 1.12; font-weight: 600; letter-spacing: -0.015em; max-width: 1400px; padding-top: 32px; border-top: var(--rule-sel) solid var(--ink); text-wrap: balance; }
+
+/* ---------- Close: what we ask for, who we are ---------- */
+.slide-close > .ex-title { margin-top: 36px; }
+.slide-close .asks { margin-top: 48px; flex: 1; display: flex; flex-direction: column; }
+.slide-close .asks li { flex: 1; display: grid; grid-template-columns: 112px 1fr; align-items: center; padding: 28px 0; border-bottom: var(--hair) solid var(--rule); font-size: 44px; line-height: 1.25; }
+.slide-close .asks li:first-child { border-top: var(--rule-head) solid var(--ink); }
+.slide-close .asks li:last-child { border-bottom: 0; }
+.slide-close .asks li b { font-family: var(--serif); font-size: 64px; font-weight: 600; line-height: 1; }
+.slide-close .sender { margin-top: auto; padding: 28px 0 56px; display: grid; grid-template-columns: 360px 1fr; gap: 64px; align-items: center; border-top: var(--hair) solid var(--rule); }
+.slide-close .sender.solo { grid-template-columns: 1fr; }
+.slide-close .sender img { width: 300px; }
+.slide-close .sender p { font-size: var(--deck-label); line-height: 1.5; color: var(--ink-2); }
+
+/* ---------- Tables: header over a 3 px ink rule, hairline rows ---------- */
+/* A figure fills the space down to the folio: a table spreads its rows, never leaves the lower half empty */
+.ex-figure:has(> .cb-table) { justify-content: flex-start; }
+.ex-figure > .cb-table:not(.dense) { flex: 1; font-size: var(--deck-body); }
+.ex-figure > .cb-table:not(.dense) td { vertical-align: middle; }
+.cb-table { width: 100%; border-collapse: collapse; font-size: 24px; line-height: 1.35; }
+.cb-table th { text-align: left; font-size: var(--deck-label); font-weight: 600; color: var(--ink-2); padding: 0 28px 12px 0; border-bottom: var(--rule-head) solid var(--ink); vertical-align: bottom; }
+.cb-table td { padding: 15px 28px 15px 0; border-bottom: var(--hair) solid var(--rule); vertical-align: top; }
+.cb-table td.k { font-weight: 600; white-space: nowrap; }
+.cb-table .r { text-align: right; }
+.cb-table tr.total td { border-top: var(--rule-head) solid var(--ink); border-bottom: 0; font-weight: 600; }
+.cb-table.dense { font-size: 18px; }
+.cb-table.dense th { font-size: 18px; }
+.cb-table.dense td { padding: 8px 22px 8px 0; }
+.cb-table .muted { color: var(--ink-3); }
+/* Scope marks: filled = in this phase, ring = later, none = not included (keeps the column aligned); always next to a word */
+.mk { display: inline-block; width: 20px; height: 20px; border-radius: 50%; margin-right: 16px; vertical-align: -1px; background: var(--ink); }
+.mk.later { background: transparent; border: 3px solid var(--cmp); }
+.mk.none { visibility: hidden; }
+.mk.no { background: transparent; border: 3px solid var(--alarm); }
+/* Ledger: three or four statements, label column + one line each */
+.ledger li { display: grid; grid-template-columns: 400px 1fr; align-items: baseline; padding: 40px 0; border-bottom: var(--hair) solid var(--rule); }
+.ledger li:first-child { border-top: var(--rule-head) solid var(--ink); }
+.ledger b { font-size: var(--deck-body); font-weight: 600; }
+.ledger span { font-size: 36px; line-height: 1.25; }
+/* One headline figure, with its parts underneath */
+.bignum .n { font-family: var(--serif); font-size: 200px; line-height: 1; font-weight: 600; letter-spacing: -0.03em; color: var(--ink); font-variant-numeric: lining-nums; }
+.bignum .u { font-size: 44px; font-weight: 600; margin-top: 20px; }
+.bignum dl { margin-top: 64px; border-top: var(--rule-head) solid var(--ink); }
+.bignum dl div { display: grid; grid-template-columns: 320px 1fr; padding: 22px 0; border-bottom: var(--hair) solid var(--rule); font-size: 30px; }
+.bignum dt { font-weight: 600; }
+
+/* ---------- Screens: a printed screenshot. A 2 px ink edge, no bezel, no radius ---------- */
+.frame-desktop { position: relative; width: 100%; aspect-ratio: 1440 / 900; border: 2px solid var(--ink); overflow: hidden; background: var(--paper); }
+.frame-desktop > .screen { position: relative; width: 100%; height: 100%; overflow: hidden; }
+/* --crop-x/--crop-y (page px) move a cropped region of the 1440x900 page into the window; deck.js sets --shot-scale */
+.frame-desktop iframe { position: absolute; top: 0; left: 0; width: 1440px; height: 900px; border: 0; transform-origin: 0 0; transform: scale(var(--shot-scale, 1)) translate(calc(var(--crop-x, 0) * -1px), calc(var(--crop-y, 0) * -1px)); pointer-events: none; }
+.frame-phone { position: relative; width: 414px; height: 868px; background: var(--ink); border-radius: 44px; padding: 12px; flex: none; }
+.frame-phone > .screen { width: 100%; height: 100%; overflow: hidden; border-radius: 34px; background: var(--field); position: relative; }
+.frame-phone iframe { width: 390px; height: 844px; border: 0; position: absolute; top: 0; left: 0; pointer-events: none; }
+.frame-phone.scaled { position: absolute; top: 50%; left: 0; transform-origin: left center; transform: translateY(-50%) scale(var(--phone-scale, 1)); }
+.frame-wrap { position: relative; min-height: 0; }
+
+/* Callouts: the screen's own term set beside the screen, a leader line to the point it names (CB.callouts) */
+.callouts { min-height: 0; display: flex; justify-content: center; align-items: center; }
+.ex-figure > .callouts { flex: 1; }
+.callouts-row { flex: 1; min-height: 0; display: flex; justify-content: center; align-items: center; }
+.callouts .shot { position: relative; flex: none; margin: 0 var(--gut-r) 0 var(--gut-l); }
+.co-dot { position: absolute; width: 22px; height: 22px; border-radius: 50%; background: var(--ink); border: 4px solid var(--paper); transform: translate(-50%, -50%); z-index: 3; }
+/* the leader: a 2 px ink line with a paper edge, so it reads across a busy screen */
+.co-lead { position: absolute; height: 6px; margin-top: -3px; background: var(--ink); border-top: 2px solid var(--paper); border-bottom: 2px solid var(--paper); z-index: 2; }
+.co-lab { position: absolute; transform: translateY(-100%); padding-bottom: 16px; font-size: var(--deck-body); line-height: 1.2; font-weight: 600; z-index: 3; }
+.co-lab.l { right: calc(100% + 28px); width: calc(var(--gut-l) - 28px); text-align: right; }
+.co-lab.r { left: calc(100% + 28px); width: calc(var(--gut-r) - 28px); }
+.co-lab small { position: absolute; top: 100%; left: 0; right: 0; padding-top: 12px; font-size: var(--deck-label); font-weight: 400; color: var(--ink-3); }
+
+/* Older screen + numbered readings layout, kept for figures that still use it */
+.annotated { flex: 1; min-height: 0; display: grid; gap: 72px; align-items: stretch; align-content: start; }
+.annotated.center { align-items: center; }
+.annotated.center .shot { align-self: center; }
+.annotated .shot { position: relative; align-self: start; }
+.readings { display: flex; flex-direction: column; }
+.annotated .pin { position: absolute; width: 32px; height: 32px; border-radius: 50%; background: var(--ink); color: var(--paper); font-size: 20px; font-weight: 700; display: grid; place-items: center; transform: translate(-50%, -50%); z-index: 2; }
+.readings li { flex: 1; display: grid; grid-template-columns: 56px 1fr; align-items: center; padding: 22px 0; border-bottom: var(--hair) solid var(--rule); }
+.readings li:first-child { border-top: var(--rule-head) solid var(--ink); }
+.readings li i { font-style: normal; font-family: var(--serif); font-size: 32px; font-weight: 600; }
+.readings li span { font-size: 32px; line-height: 1.25; }
+.pair { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-content: center; align-items: end; }
+.pair figcaption { font-size: var(--deck-body); font-weight: 600; margin-top: 20px; }
+
+/* Picture exhibit (appendix diagrams): a lighter sheet, never a card */
+.cb-picture { flex: 1; min-height: 0; background: var(--field); padding: 16px; border-top: var(--hair) solid var(--rule); border-bottom: var(--hair) solid var(--rule); }
+.cb-picture img { width: 100%; height: 100%; object-fit: contain; }
+
+/* ---------- Handling stamp (DECK_CONFIG.stamp): an ink square and its word, in the running head. Ink, not red: red is
+   kept for faults, and a handling mark on every slide is not one ---------- */
+.internal { position: absolute; top: 76px; right: var(--deck-pad); display: inline-flex; align-items: center; gap: 12px; font-size: var(--deck-label); font-weight: 700; color: var(--ink); z-index: 6; }
+.internal::before { content: ''; width: 18px; height: 18px; background: var(--ink); }
+.slide-cover .internal, .slide-statement .internal, .slide-divider .internal { top: 28px; }
+
+/* ---------- Progress: a thin ink line on the bottom edge ---------- */
+.deck-edge { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--rule); z-index: 5; }
+.deck-edge > i { display: block; height: 100%; background: var(--ink); transform: scaleX(var(--progress, 0)); transform-origin: left; }
+
+/* ---------- Chrome outside the frame (never reaches a slide or the PPTX) ----------
+   The HUD rests in its own strip under the slide, always visible and never over it: quiet grey words on the ink
+   letterbox, underlined as links, paper on hover and focus. While an export runs it says so and takes no input. */
+.deck-hud { position: fixed; left: 0; right: 0; bottom: 0; height: var(--hud-h); display: flex; align-items: center; justify-content: center; gap: 4px; padding: 0 16px; background: var(--ink); color: var(--rule); font-size: 18px; z-index: 50; }
+.deck-hud button, .deck-hud .home { color: var(--rule); min-height: 44px; min-width: 44px; padding: 0 14px; font-weight: 600; text-decoration: underline; text-decoration-color: var(--ink-3); text-underline-offset: 5px; }
+.deck-hud button:hover, .deck-hud button:focus-visible, .deck-hud .home:hover, .deck-hud .home:focus-visible { background: var(--paper); color: var(--ink); outline: none; text-decoration-color: var(--ink); }
+.deck-hud button:disabled { cursor: default; opacity: 0.45; background: none; color: var(--rule); }
+.deck-hud.busy #btn-export { opacity: 1; color: var(--paper); text-decoration: none; font-variant-numeric: tabular-nums; }
+/* the way back to the front page: served site only (deck.js sets html.site) */
+html:not(.site) .deck-hud .home { display: none; }
+.deck-hud .home { display: inline-flex; align-items: center; margin-right: 4px; border-right: var(--hair) solid var(--ink-3); }
+.deck-hud .counter { color: var(--paper); padding: 0 10px; }
+.deck-notes { position: fixed; right: 20px; bottom: calc(var(--hud-h) + 12px); width: 480px; max-height: 40vh; overflow: auto; padding: 16px 20px; background: var(--ink); color: var(--paper); font-size: 18px; line-height: 1.5; z-index: 60; display: none; white-space: pre-line; }
+.deck-notes.open { display: block; }
+.deck-notes h4, .deck-toc h4 { font-family: var(--serif); font-size: 20px; font-weight: 600; color: var(--paper); margin-bottom: 8px; padding-bottom: 6px; border-bottom: var(--hair) solid var(--ink-3); }
+.deck-toc { position: fixed; left: 20px; bottom: calc(var(--hud-h) + 12px); width: 600px; max-height: 70vh; overflow: auto; padding: 16px 12px 12px; background: var(--ink); color: var(--paper); font-size: 18px; line-height: 1.35; z-index: 60; display: none; }
+.deck-toc.open { display: block; }
+.deck-toc h4 { margin: 0 8px 8px; }
+.deck-toc ol { list-style: none; margin: 0; padding: 0; }
+.deck-toc button { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 44px; padding: 6px 8px; color: var(--rule); text-align: left; }
+.deck-toc button .num { flex: 0 0 24px; text-align: right; font-variant-numeric: tabular-nums; }
+.deck-toc button:hover, .deck-toc button:focus-visible { background: var(--paper); color: var(--ink); outline: none; }
+.deck-toc button[aria-current] { color: var(--paper); font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+.deck-toc .toc-group { margin: 12px 8px 4px; padding-top: 10px; border-top: var(--hair) solid var(--ink-3); font-family: var(--serif); font-size: 18px; color: var(--rule); }
+.deck-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 10px 16px; background: var(--paper); color: var(--ink); font-weight: 600; z-index: 70; display: none; border-bottom: var(--rule-head) solid var(--ink); }
+.deck-toast.show { display: block; }
+
+/* ---------- Touch and small screens. The slide stays a fixed 1920x1080 page scaled to fit; only the chrome moves.
+   Nothing below applies to a desktop at 1366 px and wider. ---------- */
+.deck-rotate { display: none; }
+/* one finger on the slide belongs to deck.js (swipe, tap); pinch zoom stays the browser's, and once zoomed in
+   (deck.js sets .zoomed) one finger pans the enlarged slide again */
+@media (hover: none) {
+  .deck-viewport { touch-action: pinch-zoom; }
+  .deck-viewport.zoomed { touch-action: auto; }
+}
+/* the hints name keys, and a touch screen (or a window too narrow for them) has none to press */
+@media (hover: none), (max-width: 639px) { .key-hint { display: none; } }
+/* presenter window and PPTX export belong to the laptop that runs the meeting; P and E still work there */
+@media (max-width: 999px) { #btn-presenter, #btn-export { display: none; } }
+
+/* Phone upright: the slide spans the width; the HUD takes two rows (turn the page, then the rest) */
+@media (max-width: 639px) {
+  :root { --hud-h: 104px; }
+  .deck-hud { flex-wrap: wrap; align-content: center; gap: 0 4px; padding: 0 8px; }
+  .deck-hud::before { content: ''; order: 1; flex-basis: 100%; }
+  .deck-hud .home, #btn-toc, #btn-notes { order: 2; }
+  .deck-hud button, .deck-hud .home { padding: 0 12px; }
+  /* full width: an 8 px gutter would leave slivers of the slide showing at both edges */
+  .deck-notes, .deck-toc { left: 0; right: 0; width: auto; bottom: var(--hud-h); max-height: calc(100% - var(--hud-h)); border-bottom: var(--hair) solid var(--ink-3); }
+}
+/* at about 0,2x a slide is a thumbnail: one quiet line under it says turning the phone makes it bigger (pinch zoom works too) */
+@media (max-width: 599px) and (orientation: portrait) {
+  .deck-rotate { display: block; position: fixed; left: 16px; right: 16px; top: calc((100% - var(--hud-h)) / 2 + 100vw * 9 / 32 + 24px); text-align: center; text-wrap: balance; color: var(--rule); font-size: 18px; line-height: 1.4; }
+}
+/* Phone on its side: height is what the slide lacks, so the HUD becomes a rail in the spare width at the right */
+@media (max-height: 499px) and (orientation: landscape) {
+  :root { --hud-h: 0px; --rail-w: 144px; }
+  .deck-viewport { inset: 0 var(--rail-w) 0 0; }
+  .deck-hud { left: auto; top: 0; width: var(--rail-w); height: auto; flex-direction: column; align-items: stretch; gap: 0; padding: 0 8px; }
+  .deck-hud button, .deck-hud .home { padding: 0 8px; justify-content: center; }
+  .deck-hud .home { margin: 0 0 4px; border-right: 0; border-bottom: var(--hair) solid var(--ink-3); }
+  .deck-hud .counter { text-align: center; padding: 6px 0; }
+  .deck-notes, .deck-toc { left: 0; right: var(--rail-w); top: 0; bottom: 0; width: auto; max-height: none; border-right: var(--hair) solid var(--ink-3); }
+}
+
+/* Presenter window (P) */
+.presenter { height: 100%; overflow: auto; background: var(--ink); color: var(--paper); padding: 32px 40px; display: grid; grid-template-rows: auto auto 1fr auto; gap: 20px; }
+.presenter header { display: flex; justify-content: space-between; font-size: 20px; color: var(--rule); padding-bottom: 12px; border-bottom: var(--hair) solid var(--ink-3); }
+.presenter #p-time { color: var(--paper); font-weight: 700; font-variant-numeric: tabular-nums; }
+.presenter h1 { font-family: var(--serif); font-size: 30px; line-height: 1.2; font-weight: 600; }
+.presenter #p-notes { overflow: auto; font-size: 25px; line-height: 1.5; white-space: pre-line; max-width: 62ch; }
+.presenter footer { padding-top: 14px; border-top: var(--hair) solid var(--ink-3); font-size: 19px; color: var(--rule); }
