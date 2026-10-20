@@ -1,0 +1,132 @@
+/* sheet.css: the datasheet deck. Load after ../tokens.css, ../base.css and ../mockup/kit.css (the slides draw with the
+   same chart and drawing classes as the pages). A slide is a white sheet: a kicker, one conclusion as the title, the
+   exhibit with its numbered notes, the source line, and a drawing title block along the foot.
+   Sizes are px on the fixed 1920 x 1080 frame; the smallest text on a slide is --deck-label (22 px). */
+
+:root {
+  --hud-h: 64px;  /* the control strip under the slide; deck.js fits the slide into the space above it */
+}
+html, body { height: 100%; overflow: hidden; background: var(--sheet-2); }
+
+/* ---------- Frame and slide ---------- */
+.deck-viewport { position: fixed; inset: 0 0 var(--hud-h) 0; display: grid; place-items: center; }
+.deck-frame { width: 1920px; height: 1080px; position: absolute; left: 50%; top: 50%; overflow: hidden; background: var(--sheet); transform: translate(-50%, -50%) scale(var(--frame-scale, 1)); transform-origin: center; font-size: var(--deck-body); line-height: 1.4; }
+.deck-frame.exporting { left: 0; top: 0; transform: none; }
+.slide { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 64px var(--deck-pad) 0; background: var(--sheet); visibility: hidden; }
+.slide.active { visibility: visible; }
+.deck-stamp { position: absolute; top: 64px; right: var(--deck-pad); min-height: 40px; padding: 0 14px; font-size: var(--deck-label); border-width: 2px; }
+
+/* the head: kicker, then the conclusion in one sentence, then one line under it */
+.ex-kicker { font-size: var(--deck-label); color: var(--ink-3); padding-right: 280px; }
+.ex-kicker .no { font-size: var(--deck-label); margin-right: 16px; }
+.ex-title { font-family: var(--cond); font-size: var(--deck-title); line-height: 1.12; font-weight: var(--w-bold); letter-spacing: -0.01em; max-width: 1520px; margin-top: 20px; text-wrap: balance; }
+.ex-sub { font-size: var(--deck-sub); line-height: 1.3; color: var(--ink-2); max-width: 1500px; margin-top: 16px; }
+
+/* the exhibit: the figure, and beside it the numbered notes a datasheet keeps under its tables. It is centred in the
+   height the title and the title block leave, so a short exhibit does not hang under the title over an empty foot */
+.ex-body { flex: 1; min-height: 0; margin-top: 48px; display: grid; grid-template-columns: minmax(0, 1fr); align-content: center; gap: 64px; align-items: start; }
+.ex-body.has-notes { grid-template-columns: minmax(0, 1fr) 440px; }
+.ex-fig { min-width: 0; }
+.ex-fig svg text { font-family: var(--sans); }
+.ex-notes { counter-reset: n; border-top: var(--rule-strong) solid var(--ink); }
+.ex-notes h3 { font-size: var(--deck-label); font-weight: var(--w-bold); color: var(--ink); padding: 12px 0; border-bottom: var(--hair) solid var(--rule); }
+.ex-notes li { counter-increment: n; display: grid; grid-template-columns: 40px minmax(0, 1fr); padding: 16px 0; border-bottom: var(--hair) solid var(--rule); font-size: var(--deck-label); line-height: 1.45; color: var(--ink-2); }
+.ex-notes li::before { content: counter(n); font-family: var(--mono); color: var(--ink-3); }
+.ex-notes b { color: var(--ink); font-weight: var(--w-bold); }
+.slide .key { font-size: var(--deck-label); gap: 8px 40px; margin-top: 24px; }
+.slide .key i { width: 28px; height: 18px; }
+.slide .key .k-float, .slide .key .k-link { height: 14px; }
+.slide .key .k-target { width: 0; height: 28px; border-left-width: 3px; }
+.slide .key .k-line { width: 40px; height: 0; border-top-width: 3px; }
+.ex-src { font-size: var(--deck-label); line-height: 1.4; color: var(--ink-3); max-width: 1500px; margin-top: 16px; }
+.ex-src .mono { font-size: var(--deck-label); }
+
+/* the title block: who, what, which sheet, which revision; ruled like the corner of a drawing */
+.tblock { flex: none; display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; margin: 32px calc(-1 * var(--deck-pad)) 0; padding: 0 var(--deck-pad); border-top: var(--rule-strong) solid var(--ink); font-family: var(--cond); font-size: var(--deck-label); color: var(--ink-2); }
+.tblock > span { display: flex; align-items: center; min-height: 72px; padding: 12px 32px; border-left: var(--hair) solid var(--rule); white-space: nowrap; }
+.tblock > span:first-child { padding-left: 0; border-left: 0; color: var(--ink); font-weight: var(--w-bold); }
+.tblock .pg { font-family: var(--mono); font-size: var(--deck-label); }
+
+/* ---------- Slide types ---------- */
+/* cover: the conclusion large, then the characteristics that carry it as a spec table, units in their own column; the
+   group sits in the middle of the sheet under the kicker */
+.slide-cover .ex-title { font-size: var(--deck-cover); line-height: 1.04; letter-spacing: -0.02em; max-width: 1600px; margin-top: auto; }
+.slide-cover .ex-sub { margin-top: 28px; }
+.cover-spec { margin-top: 64px; margin-bottom: auto; }
+.cover-spec td { height: 80px; }
+.cover-spec .v { font-family: var(--cond); font-size: 44px; font-weight: var(--w-bold); letter-spacing: -0.01em; white-space: nowrap; }
+.cover-spec .u, .cover-spec .b { font-size: var(--deck-label); color: var(--ink-2); }
+
+/* figure: one number the room should remember */
+.slide-figure .big { display: flex; align-items: baseline; gap: 24px; margin-top: auto; padding-top: 32px; border-top: var(--rule-strong) solid var(--ink); }
+.slide-figure .big b { font-family: var(--cond); font-size: var(--deck-fig); line-height: 1; font-weight: var(--w-bold); letter-spacing: -0.02em; }
+.slide-figure .big span { font-size: var(--deck-sub); color: var(--ink-2); }
+.slide-figure .fig-ex { margin-top: 56px; margin-bottom: auto; }
+
+/* table: the datasheet's characteristics table at slide size */
+.ex-tbl th { text-align: left; vertical-align: bottom; font-size: var(--deck-label); font-weight: var(--w-reg); color: var(--ink-3); padding: 0 32px 12px 0; border-bottom: var(--rule-strong) solid var(--ink); }
+.ex-tbl td { font-size: var(--deck-body); height: 88px; padding: 0 32px 0 0; border-bottom: var(--hair) solid var(--rule); }
+.ex-tbl :is(th, td):last-child { padding-right: 0; }
+.ex-tbl .r { text-align: right; font-variant-numeric: tabular-nums; }
+.ex-tbl .k { font-weight: var(--w-bold); }
+.ex-tbl tr.total td { border-top: var(--rule-strong) solid var(--ink); border-bottom: 0; font-weight: var(--w-bold); }
+.ex-tbl tr.is-sel td { background: var(--tint); }
+.ex-tbl .status { font-size: var(--deck-body); }
+
+/* close: the asks, numbered, each a sentence, centred in the height the title and the title block leave */
+.asks { margin: auto 0; border-top: var(--rule-strong) solid var(--ink); }
+.asks li { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 8px; padding: 36px 0; border-bottom: var(--hair) solid var(--rule); font-size: var(--deck-sub); line-height: 1.3; }
+.asks li > span:first-child { font-family: var(--mono); color: var(--ink-3); font-size: var(--deck-sub); }
+.asks small { display: block; margin-top: 8px; font-size: var(--deck-label); color: var(--ink-2); }
+
+/* progress along the foot */
+.deck-edge { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--rule); z-index: 5; }
+.deck-edge > i { display: block; height: 100%; background: var(--mark); transform: scaleX(var(--progress, 0)); transform-origin: left; }
+
+/* ---------- The HUD and its overlays: deck chrome, outside the slide ---------- */
+.deck-hud { position: fixed; left: 0; right: 0; bottom: 0; height: var(--hud-h); display: flex; align-items: center; justify-content: center; gap: 4px; padding: 0 16px; background: var(--ink); color: var(--rule); font-size: 18px; z-index: 50; }
+.deck-hud button { display: inline-flex; align-items: center; color: var(--rule); min-height: 44px; min-width: 44px; padding: 0 14px; font-weight: var(--w-med); border-radius: var(--r-ctl); }
+.deck-hud button:hover, .deck-hud button:focus-visible { background: var(--sheet); color: var(--ink); outline: none; }
+.deck-hud button:disabled { cursor: default; color: var(--edge); background: none; }
+.deck-hud.busy #btn-export { color: var(--sheet); font-variant-numeric: tabular-nums; }
+.deck-hud .counter { font-family: var(--mono); color: var(--sheet); padding: 0 10px; }
+.deck-notes, .deck-toc { position: fixed; bottom: calc(var(--hud-h) + 12px); max-height: 70vh; overflow: auto; background: var(--ink); color: var(--sheet); font-size: 18px; line-height: 1.5; z-index: 60; display: none; }
+.deck-notes { right: 20px; width: 480px; max-height: 40vh; padding: 16px 20px; white-space: pre-line; }
+.deck-toc { left: 20px; width: 600px; padding: 16px 12px 12px; line-height: 1.35; }
+.deck-notes.open, .deck-toc.open { display: block; }
+.deck-notes h2, .deck-toc h2 { font-size: 18px; font-weight: var(--w-bold); color: var(--sheet); margin-bottom: 8px; padding-bottom: 6px; border-bottom: var(--hair) solid var(--edge); }
+.deck-toc h2 { margin: 0 8px 8px; }
+.deck-toc button { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 44px; padding: 6px 8px; color: var(--rule); text-align: left; }
+.deck-toc button .num { flex: 0 0 24px; text-align: right; font-family: var(--mono); }
+.deck-toc button:hover, .deck-toc button:focus-visible { background: var(--sheet); color: var(--ink); outline: none; }
+.deck-toc button[aria-current] { color: var(--sheet); font-weight: var(--w-bold); text-decoration: underline; text-underline-offset: 4px; }
+.deck-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 10px 16px; background: var(--sheet); color: var(--ink); font-weight: var(--w-bold); z-index: 70; display: none; box-shadow: var(--lift); }
+.deck-toast.show { display: block; }
+.deck-rotate { display: none; }
+
+@media (hover: none) {
+  .deck-viewport { touch-action: pinch-zoom; }
+  .deck-viewport.zoomed { touch-action: auto; }
+}
+@media (hover: none), (max-width: 639px) { .key-hint { display: none; } }
+/* presenter window and PPTX export belong to the laptop that runs the meeting; P and E still work there */
+@media (max-width: 999px) { #btn-presenter, #btn-export { display: none; } }
+@media (max-width: 639px) {
+  :root { --hud-h: 104px; }
+  .deck-hud { flex-wrap: wrap; align-content: center; gap: 0 4px; padding: 0 8px; }
+  .deck-hud::before { content: ''; order: 1; flex-basis: 100%; }
+  #btn-toc, #btn-notes { order: 2; }
+  .deck-hud button { padding: 0 12px; }
+  .deck-notes, .deck-toc { left: 0; right: 0; width: auto; bottom: var(--hud-h); max-height: calc(100% - var(--hud-h)); }
+}
+@media (max-width: 599px) and (orientation: portrait) {
+  .deck-rotate { display: block; position: fixed; left: 16px; right: 16px; top: calc((100% - var(--hud-h)) / 2 + 100vw * 9 / 32 + 24px); text-align: center; text-wrap: balance; color: var(--ink-2); font-size: 18px; line-height: 1.4; }
+}
+
+/* ---------- Presenter window (deck.js writes this page) ---------- */
+.presenter { height: 100%; overflow: auto; background: var(--ink); color: var(--sheet); padding: 32px 40px; display: grid; grid-template-rows: auto auto 1fr auto; gap: 20px; }
+.presenter header { display: flex; justify-content: space-between; font-size: 20px; color: var(--rule); padding-bottom: 12px; border-bottom: var(--hair) solid var(--edge); }
+.presenter #p-time { font-family: var(--mono); color: var(--sheet); font-weight: var(--w-bold); }
+.presenter h1 { font-size: 30px; line-height: 1.2; font-weight: var(--w-bold); }
+.presenter #p-notes { overflow: auto; font-size: 25px; line-height: 1.5; white-space: pre-line; max-width: 62ch; }
+.presenter footer { padding-top: 14px; border-top: var(--hair) solid var(--edge); font-size: 19px; color: var(--rule); }
